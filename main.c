@@ -44,40 +44,115 @@
   *
   ******************************************************************************
   */
+
 #include "main.h"
+
+SCB_Type *scb = SCB;
+GPIO_TypeDef *gpioa = GPIOA;
 
 USBH_HandleTypeDef hUSBHost;
 HID_ApplicationTypeDef Appli_state = APPLICATION_IDLE;
+
+USART_HandleTypeDef console_uart;
 
 static void SystemClock_Config(void);
 static void USBH_UserProcess(USBH_HandleTypeDef* phost, uint8_t id);
 static void HID_InitApplication(void);
 static void Error_Handler(void);
 
+void WWDG_IRQHandler()
+{
+    while (1);
+}
+
+void uart_print(char *s)
+{
+    /* Like, there is millions of lines of perfectly useless pseudo-comments in the HAL driver. But don't think they'd
+     * say what unit that timeout parameter has in any obvious place. I'll just go with milliseconds here -.- */
+    HAL_USART_Transmit(&console_uart, (uint8_t*)s, strlen(s), 1000);
+}
+
+void uart_putc(char c)
+{
+    /* See above. */
+    HAL_USART_Transmit(&console_uart, (uint8_t*)&c, 1, 1000);
+}
+
+void HAL_USART_MspInit(USART_HandleTypeDef *narf)
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    
+    /* TX */
+    GPIO_InitTypeDef pa9 = {
+        .Pin = GPIO_PIN_9,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_LOW,
+        .Alternate = GPIO_AF7_USART1
+    };
+    HAL_GPIO_Init(GPIOA, &pa9);
+
+    /* RX */
+    GPIO_InitTypeDef pa10 = {
+        .Pin = GPIO_PIN_10,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_LOW,
+        .Alternate = GPIO_AF7_USART1
+    };
+    HAL_GPIO_Init(GPIOA, &pa10);
+}
+
 int main(void)
 {
     HAL_Init();
     SystemClock_Config();
+    /* FIXME
     HID_InitApplication();
     USBH_Init(&hUSBHost, USBH_UserProcess, 0);
     USBH_RegisterClass(&hUSBHost, USBH_HID_CLASS);
     USBH_Start(&hUSBHost);
+    */
 
+    /* LEDs */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_USART1_CLK_ENABLE();
+    RCC->AHB1ENR  |= RCC_AHB1ENR_GPIOAEN;
+    GPIOA->MODER |=
+        (1<<GPIO_MODER_MODER6_Pos)|
+        (1<<GPIO_MODER_MODER7_Pos);
+
+    GPIOA->OSPEEDR |=
+        (2<<GPIO_OSPEEDR_OSPEED6_Pos)|
+        (2<<GPIO_OSPEEDR_OSPEED7_Pos);
+
+    USART_HandleTypeDef foo = {
+        .Instance = USART1,
+        .Init = {
+            .BaudRate = 115200,
+            .WordLength = USART_WORDLENGTH_8B,
+            .StopBits = USART_STOPBITS_1,
+            .Parity = USART_PARITY_NONE,
+            .Mode = USART_MODE_TX_RX
+        }
+    };
+    console_uart = foo;
+    HAL_USART_Init(&console_uart);
+
+    static int ticks = 0;
     while (1) {
-        USBH_Process(&hUSBHost);
-        HID_MenuProcess();
+        /* FIXME USBH_Process(&hUSBHost); */
+        /* FIXME HID_MenuProcess(); */
+        Toggle_Leds();
+        if (ticks++ == 1000000) {
+            uart_print("This is a test\r\n");
+            ticks = 0;
+        }
     }
 }
 
 static void HID_InitApplication(void)
 {
-    BSP_LED_Init(LED1);
-    BSP_LED_Init(LED2);
-    BSP_LED_Init(LED3);
-    BSP_LED_Init(LED4);
-
-    BSP_PB_Init(BUTTON_WAKEUP, BUTTON_MODE_GPIO);
-
     HID_MenuInit();
 }
 
@@ -104,97 +179,53 @@ static void USBH_UserProcess(USBH_HandleTypeDef* phost, uint8_t id)
     }
 }
 
-void Toggle_Leds(void)
-{
+void Toggle_Leds(void) {
     static uint32_t ticks;
 
-    if (ticks++ == 100) {
-        BSP_LED_Toggle(LED1);
-        BSP_LED_Toggle(LED2);
-        BSP_LED_Toggle(LED3);
-        BSP_LED_Toggle(LED4);
+    if (ticks++ == 1000000) {
+        GPIOA->ODR ^= GPIO_ODR_OD6;
+        GPIOA->ODR ^= GPIO_ODR_OD7;
         ticks = 0;
     }
 }
 
-/**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 180000000
-  *            HCLK(Hz)                       = 180000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 4
-  *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 8000000
-  *            PLL_M                          = 8
-  *            PLL_N                          = 360
-  *            PLL_P                          = 2
-  *            PLL_Q                          = 7
-  *            PLL_R                          = 2
-  *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
-  *            Flash Latency(WS)              = 5
-  *         The USB clock configuration from PLLSAI:
-  *            PLLSAIM                        = 8
-  *            PLLSAIN                        = 384
-  *            PLLSAIP                        = 8
-  * @param  None
-  * @retval None
-  */
 static void SystemClock_Config(void)
 {
-    RCC_ClkInitTypeDef RCC_ClkInitStruct;
-    RCC_OscInitTypeDef RCC_OscInitStruct;
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
-
     /* Enable Power Control clock */
     __HAL_RCC_PWR_CLK_ENABLE();
 
-    /* The voltage scaling allows optimizing the power consumption when the device
-     is
-     clocked below the maximum system frequency, to update the voltage scaling
-     value
-     regarding system frequency refer to product datasheet.  */
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
     /* Enable HSE Oscillator and activate PLL with HSE as source */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-#if defined(USE_STM32469I_DISCO_REVA)
-    RCC_OscInitStruct.PLL.PLLM = 25;
-#else
-    RCC_OscInitStruct.PLL.PLLM = 8;
-#endif /* USE_STM32469I_DISCO_REVA */
-    RCC_OscInitStruct.PLL.PLLN = 360;
-    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 7;
-    RCC_OscInitStruct.PLL.PLLR = 2;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    RCC_OscInitTypeDef foo = {
+        .OscillatorType = RCC_OSCILLATORTYPE_HSE,
+        .HSEState = RCC_HSE_ON,
+        .PLL.PLLState = RCC_PLL_ON,
+        .PLL.PLLSource = RCC_PLLSOURCE_HSE,
+        /* HSE input: 8MHz */
+        .PLL.PLLM = 8,             /* VCO in: 1MHz = 8MHz / 8 */
+        .PLL.PLLN = 336,           /* VCO out: 336MHz = 1MHz * 336 */
+        .PLL.PLLP = RCC_PLLP_DIV2, /* System: 168MHz = 336Mhz / 2 */
+        .PLL.PLLQ = 7              /* USB: 48MHz = 336MHz / 7 */
+    };
+    if (HAL_RCC_OscConfig(&foo) != HAL_OK)
         Error_Handler();
 
-    /* Enable the OverDrive to reach the 180 Mhz Frequency */
-    if (HAL_PWREx_EnableOverDrive() != HAL_OK)
-        Error_Handler();
-
-    /* Select PLLSAI output as USB clock source */
-    PeriphClkInitStruct.PLLSAI.PLLSAIQ = 7;
-    PeriphClkInitStruct.PLLSAI.PLLSAIN = 384;
-    PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV8;
+    /* FIXME does this require configuration?
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CK48;
     PeriphClkInitStruct.Clk48ClockSelection = RCC_CK48CLKSOURCE_PLLSAIP;
     HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+    */
 
     /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
      clocks dividers */
-    RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+    RCC_ClkInitTypeDef bar = {
+        .ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2),
+        .SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK,   /* See above */
+        .AHBCLKDivider = RCC_SYSCLK_DIV1,          /* 168MHz = 168MHz / 1 */
+        .APB1CLKDivider = RCC_HCLK_DIV4,           /* 42MHz = 168MHz / 4 */
+        .APB2CLKDivider = RCC_HCLK_DIV2            /* 84Mhz = 168MHz / 2 */
+    };
+    if (HAL_RCC_ClockConfig(&bar, FLASH_LATENCY_5) != HAL_OK)
         Error_Handler();
 }
 
@@ -211,4 +242,6 @@ static void Error_Handler(void)
     while (1)
         ;
 }
+
+void _init(void) {}
 

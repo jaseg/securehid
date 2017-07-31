@@ -47,23 +47,44 @@
 
 #define HAL_MODULE_ENABLED
 
-#define HAL_DMA_MODULE_ENABLED
-#include "stm32f4xx_hal_dma.h"
+#include "stm32f4xx_hal_def.h"
 
-#define HAL_DMA2D_MODULE_ENABLED
-#include "stm32f4xx_hal_dma2d.h"
+#define HAL_RCC_MODULE_ENABLED
+#include "stm32f4xx_hal_rcc.h"
 
 #define HAL_FLASH_MODULE_ENABLED
 #include "stm32f4xx_hal_flash.h"
+
+#define HAL_DMA_MODULE_ENABLED
+#include "stm32f4xx_hal_dma.h"
+
+#define HAL_USART_MODULE_ENABLED
+#include "stm32f4xx_hal_usart.h"
+
+#define HAL_PWR_MODULE_ENABLED
+#include "stm32f4xx_hal_pwr.h"
+
+/* USB host controller foo */
+#define HAL_HCD_MODULE_ENABLED
+#include "stm32f4xx_hal_hcd.h"
+
+/* Whoever needs a HAL for GPIOs... */
+#define HAL_GPIO_MODULE_ENABLED
+#include "stm32f4xx_hal_gpio.h"
+
+/* Why not wrap the wrapper? */
+#define HAL_CORTEX_MODULE_ENABLED
+#include "stm32f4xx_hal_cortex.h"
+
+/*
+#define HAL_DMA2D_MODULE_ENABLED
+#include "stm32f4xx_hal_dma2d.h"
 
 #define HAL_SRAM_MODULE_ENABLED
 #include "stm32f4xx_hal_sram.h"
 
 #define HAL_SDRAM_MODULE_ENABLED
 #include "stm32f4xx_hal_sdram.h"
-
-#define HAL_GPIO_MODULE_ENABLED
-#include "stm32f4xx_hal_gpio.h"
 
 #define HAL_I2C_MODULE_ENABLED
 #include "stm32f4xx_hal_i2c.h"
@@ -74,23 +95,9 @@
 #define HAL_DSI_MODULE_ENABLED
 #include "stm32f4xx_hal_dsi.h"
 
-#define HAL_PWR_MODULE_ENABLED
-#include "stm32f4xx_hal_pwr.h"
-
-#define HAL_RCC_MODULE_ENABLED
-#include "stm32f4xx_hal_rcc.h"
-
-#define HAL_UART_MODULE_ENABLED
-#include "stm32f4xx_hal_uart.h"
-
-#define HAL_CORTEX_MODULE_ENABLED
-#include "stm32f4xx_hal_cortex.h"
-
-#define HAL_HCD_MODULE_ENABLED
-#include "stm32f4xx_hal_hcd.h"
-
 #define HAL_FMPI2C_MODULE_ENABLED
 #include "stm32f4xx_hal_fmpi2c.h"
+*/
 
 #if !defined(HSE_VALUE)
 #if defined(USE_STM32469I_DISCO_REVA)

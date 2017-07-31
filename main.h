@@ -47,10 +47,11 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include "stdio.h"
 #include "usbh_core.h"
 #include "usbh_hid.h"
 #include "usbh_hid_parser.h"
+
+#include "stdio.h"
 
 typedef enum {
     HID_DEMO_START = 0,
@@ -81,6 +82,7 @@ typedef enum {
 extern USBH_HandleTypeDef hUSBHost;
 extern HID_ApplicationTypeDef Appli_state;
 extern HID_DEMO_StateMachine hid_demo;
+extern USART_HandleTypeDef console_uart;
 
 void Toggle_Leds(void);
 void HID_SelectItem(uint8_t** menu, uint8_t item);
@@ -88,5 +90,8 @@ void HID_MenuInit(void);
 void HID_MenuProcess(void);
 void HID_KeyboardMenuProcess(void);
 void USR_KEYBRD_ProcessData(uint8_t data);
+
+void uart_print(char *s);
+void uart_putc(char c);
 
 #endif
