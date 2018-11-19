@@ -1,0 +1,200 @@
+\documentclass[12pt,a4paper,notitlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,textwidth=17cm, top=2cm, bottom=3.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+\usepackage{ngerman} 
+\usepackage{amssymb,amsmath}
+\usepackage{listings}
+\usepackage{eurosym}
+\usepackage{wasysym}
+\usepackage{amsthm}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{commath}
+\usepackage{subfigure}
+\usepackage[pdftex]{graphicx,color}
+\usepackage{epstopdf}
+\newcommand{\re}{\text{Re}}
+\newcommand{\im}{\text{Im}}
+\newcommand{\foonote}[1]{\footnote{#1}}
+\newcommand{\degree}{\ensuremath{^\circ}}
+\author{Sebastian Götte {\texttt<securehid@jaseg.net>}}
+\title{SecureHID}
+\subtitle{Hardening the USB input stack in virtualized environments}
+\date{August 12 2018}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\subsection{Human input devices in a modern desktop system's Trusted Computing Base}
+Security in modern computer systems is a complex topic with many practical intricacies. Despite decades-long efforts to
+increase the security of end-user systems modern systems provide ample room for catastrophic failure. While some modern
+technologies such as web browsers have become hardened to a degree that their user cannot unwittingly fully compromise
+their system many other systems such as email have not progressed as much. Today, still, the opening of a seedy email
+attachment will in general suffice to cause a full compromise of the user's system. A few dialog boxes and warning
+messages have been added but the user experience of causing full compromise is still fundamentally the same only with
+the number of clicks now being some four instead of two.
+
+Various architectural solutions to this problem have been proposed, the most promising of which being based on radical
+compartmentalization. Smartphone operating systems such as Apple's iOS or Google's Android are single-user systems with
+strict application-based compartmentalization. In this paper however we will focus on desktop operating systems due to
+their more critical role. Probably the most advanced hardened desktop operating system currently publicly available is
+QubesOS. QubesOS uses the Xen hypervisor to enforce strict compartmentalization by usage domain and has been endorsed by
+several respected individuals and organizations.
+
+Any system like QubesOS is faced by the fundamental problem of reducing the system's trusted computing base and thereby
+reducing attack surface while staying usable in everyday work. A computer bolted to the foundation of a bank vault
+guarded by ninjas and having no input devices and no network connections would be as secure as it would be practically
+useless.
+
+A particular point of contention in the trusted computing base of any secure system is human input devices. Since
+they're used for any authentication and authorization as well as the issuance of any user commands, human input
+devices--not some part of the CPU or some trusted platform module--are the single most privileged component of any
+system. An attacker in control of the input device or any upstream part of the input stack can observe passwords and
+emulate user input amounting to full control of the machine.
+
+\subsection{Attack surface in reasonably secure systems}
+\begin{figure}
+\tikzstyle{block} = [rectangle, draw, text centered, minimum height=4em]
+\begin{tikzpicture}[node distance=2cm, auto]
+	\node[block](matrix){Key matrix}
+	\node[block](hidctrl){Keyboard controller}
+	\node[block](hubs){USB hubs}
+	\node[block](roothub){USB host controller}
+	\node[block](pcie){PCIe bus}
+	\node[block](sys-usb-kernel){USB VM kernel}
+	\node[block](sys-usb-agent){USB VM userspace agent}
+	\node[block](dom0){dom0 agent}
+\end{tikzpicture}
+\label{qubes-hid-stack}
+\caption{The USB HID input stack in a QubesOS setup}
+\end{figure}
+
+Figure \ref{qubes-hid-stack} gives an overview of the components of the USB input stack on a QubesOS system up to dom0,
+i.e. the hypervisor. Once an input event arrives at the hypervisor it is propagated back down through a pair of agents
+into the domain that currently has keyboard focus.
+
+The QubesOS-specific parts of this stack (the event proxies forwarding the event from the USB VM into dom0 and further
+into the target VM) have been designed with security in mind. Their implementations are well-reviewed and their
+interfaces have deliberately been kept as simple as possible to reduce the attack surface. Clean design on the part of
+QubesOS allows for a high degree of trust into these interfaces. In contrast to this, most of the practical attack
+surface in this stack lies on both ends of the physical USB interface. On the one hand, USB is expressly designed to
+allow for hot-plugging and online re-enumeration of devices which means any device plugged in to any USB port could
+potentially masquerade as a keyboard. This is a very large problem in case of physical access to the device but can also
+become a problem for remote attackers gaining some degree of local privilege. With rare exceptions USB firmware
+programmers do not recognize the USB interface as a potential target for attack which means an attacker with access to
+one USB device can potentially compromise this USB device as part of a larger attack.
+
+Issues like these can in part be mitigated with host-based filtering, such as explicit whitelisting of physical USB
+ports for HID devices. In this case, however, the USB driver stack of the linux kernel running the USB VM remains as a
+very large attack surface. The USB device drivers in Linux in general are not a paragon of code quality, and since the
+device can choose which driver the kernel will load a flaw in any one of them suffices. Approaches such as whitelisting
+or explicit approval of driver loads interfere too much with a computer's day-to-day operation and thus are not
+generally implemented. Also, like any kind of application firewall the user would quickly be desensitized to the
+frequent but harmless warning message popping up decreasing the probability of the protection working in case of an
+actual attack by a large margin.
+
+A possible secure solution for this problem would be to completely separate security-critical USB devices such as
+keyboard and mouse from everything else. A practical implementation of this would require two separate USB host
+controllers in two separate PCIe devices attached to two separate USB VMs, one of which has HID privileges and
+everything but the HID drivers blacklisted. This approach has two primary drawbacks. One, it only works in desktop
+computers and not in laptops, which often only have a single USB controller soldered onto the mainboard with the input
+devices hard-wired into the system. Two, this approach incurs a very large overhead of an entire separate PCIe device
+and VM just for HID stack isolation.
+
+In the following sections we will explore a way of securing the USB HID stack at the example of QubesOS without
+modifications to the computer itself. Section \ref{commodityhardware} will give an overview over existing secure input
+solutions and list some of the challenges to be overcome.
+
+\section{Synthesizing a secure input device from commodity hardware}
+\label{commodityhardware}
+\subsection{The state of technology}
+% FIXME: Definition for "secure input device"
+There is two widespread uses of secure input devices in everyday systems. One are the keyboards used for PIN entry on
+ATMs and card payment terminals. ATM keyboards form a system that can be described as a Hardware Security Module (HSM)
+with buttons. They have their own buffer batteries for always-on active tamper detection. They incorporate security
+meshes to form a manipulation-proof security envelope as is usual for other HSMs. Finally, they contain cryptographic
+key material to encrypt and authenticate any user input to prevent a manipulated ATM from recording PINs. Though it
+provides a reasonable level of security a solution like this is unworkable for everyday use with a computer. A
+specialized keyboard built like a HSM would be both very expensive and exceedingly unpopular with users, who in many
+cases have very strong preferences regarding their input devices.
+
+Another widespread application of a secure input device is TAN generators used with some electronic payment cards as
+part of a ``ChipTAN'' scheme. These devices contain a battery, a small numeric keypad and a small display. Their intent
+is to provide a secure channel for transaction confirmation in online banking or online shopping irrespective of the
+security of the host machine. The system works by a trusted server generating a challenge for each transaction that is
+entered into the TAN generator along with a smartcard. The smartcard uses the TAN generator's keypad and display to ask
+the user for confirmation, and in case of confirmation generates a 6-digit response code. The response code is entered
+by the user and sent to the trusted server who validates it and executes the transaction.
+
+A scheme like this might work for authorization of infrequent but dangerous actions but fails to work in everyday use.
+
+\subsection{Requirements to a secure input device in the QubesOS setting}
+A secure input device in the QubesOS setting has to provide three general characteristics to be useful.
+\begin{enumeration}
+\item \emph{Authentication} means that only actual input the user gave is accepted, and there is no way for an adversary
+	to forge malicious input. Input may neither be re-ordered nor suppressed. Only a complete denial of service is
+	acceptable in an attack scenario as it will alert the user that things are amiss.
+\item \emph{Secrecy} means that an adversary must not be able to learn the contents of the input the user provides. This
+	does not cover timing attacks, which unfortunately will always be possible on a low-latency channel such as
+	this.
+\item \emph{USB compatibility} means that any solution must be compatible with regular HID devices such as keyboards and
+	mice. Special hardware may be required, but no modifications of the existing input device are permittable.
+\end{enumeration}
+
+\subsection{Attacker model}
+As part of our work we consider attacks on the HID stack as shown in figure \ref{qubes-hid-stack}. We ignore any part
+upstream of the USB VM as the codebase of QubesOS is already well-reviewed and engineered to a very high standard of
+security.
+
+We consider an attacker that has gained full control of the USB VM and any attached devices. We don't consider a
+malicious keyboard a threat due to the \emph{USB compatibility} requirement. Our goal is to protect both the host system
+as well as the keyboard from malicious action by the attacker.
+
+\subsection{Security maxims}
+Our central design criterion is to keep any interfaces between zones of different trust as simple as possible to reduce
+attack surface. Complex interfaces inevitably lead to programming errors which in many cases lead to security
+vulnerabilities. In particular we observe that on a high-level view in the HID model information flows from the input
+device to the host. The only exception from this is the status of a keyboard's indicator LEDs, which is much
+lower-bandwidth than the keyboard input data. This means that an appropriately minimalist implementation of our system
+can get away with asymmetric interfaces or, if the status LEDs are dispensable, an entirely one-way interface.
+
+\subsection{Usability challenges and their implications}
+% ???
+
+\subsection{System overview}
+Our system consists of a small device plugged in between a regular USB keyboard or mouse and the host computer. To
+accomodate both keyboard and mouse in one device a two-port USB hub is integrated. The device is internally split into
+two sides: The secure side facing keyboard and mouse consists of a powerful, USB host-capable micocontroller. The
+insecure side facing the host has a less powerful microcontroller that is only USB device-capable. Both are separated
+with an isolation barrier and some supply rail decoupling to frustrate potential side-channel attacks.
+% Is an isolation barrier really needed here?
+
+The device has three external USB ports: Keyboard, mouse and host. The device contains both a very bright LED and a
+buzzer which are used to signify keyslot changes.
+
+A small button hidden in a hole on the device's back side triggers device/host pairing and a large rotary switch on the
+top allows manual keyslot selection. The first position of the keyslot switch is used for insecure HID passthrough for
+compatibility with legacy systems.
+
+\section{Hardware implementation}
+
+\section{Cryptographic implementation}
+\subsection{Security requirements and attack model}
+\subsection{Asymmetric, authenticated ECDH key agreement}
+\subsection{Key management}
+
+\section{Firmware considerations}
+
+\section{Conclusion}
+
+\bibliographystyle{plain}
+\nocite{*}
+\bibliography{overview}
+
+\end{document}
