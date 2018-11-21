@@ -676,17 +676,6 @@ F 3 "" H 1950 1150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L device:C_Small C3
-U 1 1 5BF645FD
-P 2350 1150
-F 0 "C3" H 2442 1196 50  0000 L CNN
-F 1 "100n" H 2442 1105 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2350 1150 50  0001 C CNN
-F 3 "" H 2350 1150 50  0001 C CNN
-	1    2350 1150
-	1    0    0    -1  
-$EndComp
-$Comp
 L device:C_Small C4
 U 1 1 5BF6483B
 P 2750 1150
@@ -725,12 +714,7 @@ Connection ~ 1550 1050
 Connection ~ 1950 1050
 Wire Wire Line
 	1950 1050 1550 1050
-Connection ~ 2350 1050
-Wire Wire Line
-	2350 1050 1950 1050
 Connection ~ 2750 1050
-Wire Wire Line
-	2750 1050 2350 1050
 Connection ~ 3150 1050
 Wire Wire Line
 	3150 1050 2750 1050
@@ -738,11 +722,6 @@ Wire Wire Line
 	1550 1250 1950 1250
 Connection ~ 1550 1250
 Connection ~ 1950 1250
-Wire Wire Line
-	1950 1250 2350 1250
-Connection ~ 2350 1250
-Wire Wire Line
-	2350 1250 2750 1250
 Connection ~ 2750 1250
 Wire Wire Line
 	2750 1250 3150 1250
@@ -2267,14 +2246,10 @@ Wire Wire Line
 	14150 4350 13450 4350
 Wire Wire Line
 	13450 4250 14150 4250
-Text Label 14150 3550 2    50   ~ 0
+Text Label 15100 3550 2    50   ~ 0
 SECURE_IF_F4RX
-Text Label 14150 3650 2    50   ~ 0
+Text Label 15100 3650 2    50   ~ 0
 SECURE_IF_F4TX
-Wire Wire Line
-	14150 3650 13450 3650
-Wire Wire Line
-	13450 3550 14150 3550
 $Comp
 L device:Crystal_GND24_Small Y3
 U 1 1 5C1E1737
@@ -4044,14 +4019,54 @@ F 3 "" H 2200 5200 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L power:+3.3VA #PWR?
+L power:+3.3VA #PWR0108
 U 1 1 5BFC45BE
 P 2300 3650
-F 0 "#PWR?" H 2300 3500 50  0001 C CNN
+F 0 "#PWR0108" H 2300 3500 50  0001 C CNN
 F 1 "+3.3VA" H 2315 3823 50  0000 C CNN
 F 2 "" H 2300 3650 50  0001 C CNN
 F 3 "" H 2300 3650 50  0001 C CNN
 	1    2300 3650
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	1950 1050 2750 1050
+Wire Wire Line
+	1950 1250 2750 1250
+$Comp
+L Connector:TestPoint_Alt TP?
+U 1 1 5BFF0539
+P 14400 3500
+F 0 "TP?" V 14400 3800 50  0000 C CNN
+F 1 "TestPoint_Alt" V 14504 3574 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 14600 3500 50  0001 C CNN
+F 3 "~" H 14600 3500 50  0001 C CNN
+	1    14400 3500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint_Alt TP?
+U 1 1 5C0015E1
+P 14400 3600
+F 0 "TP?" V 14400 3900 50  0000 C CNN
+F 1 "TestPoint_Alt" V 14504 3674 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 14600 3600 50  0001 C CNN
+F 3 "~" H 14600 3600 50  0001 C CNN
+	1    14400 3600
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	13450 3650 14400 3650
+Wire Wire Line
+	13450 3550 14400 3550
+Wire Wire Line
+	14400 3500 14400 3550
+Connection ~ 14400 3550
+Wire Wire Line
+	14400 3550 15100 3550
+Wire Wire Line
+	14400 3600 14400 3650
+Connection ~ 14400 3650
+Wire Wire Line
+	14400 3650 15100 3650
 $EndSCHEMATC

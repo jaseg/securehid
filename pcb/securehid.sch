@@ -2246,14 +2246,10 @@ Wire Wire Line
 	14150 4350 13450 4350
 Wire Wire Line
 	13450 4250 14150 4250
-Text Label 14150 3550 2    50   ~ 0
+Text Label 15100 3550 2    50   ~ 0
 SECURE_IF_F4RX
-Text Label 14150 3650 2    50   ~ 0
+Text Label 15100 3650 2    50   ~ 0
 SECURE_IF_F4TX
-Wire Wire Line
-	14150 3650 13450 3650
-Wire Wire Line
-	13450 3550 14150 3550
 $Comp
 L device:Crystal_GND24_Small Y3
 U 1 1 5C1E1737
@@ -4037,4 +4033,62 @@ Wire Wire Line
 	1950 1050 2750 1050
 Wire Wire Line
 	1950 1250 2750 1250
+$Comp
+L Connector:TestPoint_Alt TP81
+U 1 1 5BFF0539
+P 14400 3500
+F 0 "TP81" V 14400 3800 50  0000 C CNN
+F 1 "TestPoint_Alt" V 14504 3574 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 14600 3500 50  0001 C CNN
+F 3 "~" H 14600 3500 50  0001 C CNN
+	1    14400 3500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint_Alt TP82
+U 1 1 5C0015E1
+P 14400 3600
+F 0 "TP82" V 14400 3900 50  0000 C CNN
+F 1 "TestPoint_Alt" V 14504 3674 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 14600 3600 50  0001 C CNN
+F 3 "~" H 14600 3600 50  0001 C CNN
+	1    14400 3600
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	13450 3650 14400 3650
+Wire Wire Line
+	13450 3550 14400 3550
+Wire Wire Line
+	14400 3500 14400 3550
+Connection ~ 14400 3550
+Wire Wire Line
+	14400 3550 15100 3550
+Wire Wire Line
+	14400 3600 14400 3650
+Connection ~ 14400 3650
+Wire Wire Line
+	14400 3650 15100 3650
+$Comp
+L Connector:TestPoint_Alt TP?
+U 1 1 5C13B94B
+P 14400 3700
+F 0 "TP?" V 14400 4000 50  0000 C CNN
+F 1 "TestPoint_Alt" V 14504 3774 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.0x1.0mm" H 14600 3700 50  0001 C CNN
+F 3 "~" H 14600 3700 50  0001 C CNN
+	1    14400 3700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GNDA #PWR?
+U 1 1 5C14109B
+P 14400 3700
+F 0 "#PWR?" H 14400 3450 50  0001 C CNN
+F 1 "GNDA" H 14405 3527 50  0000 C CNN
+F 2 "" H 14400 3700 50  0001 C CNN
+F 3 "" H 14400 3700 50  0001 C CNN
+	1    14400 3700
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
