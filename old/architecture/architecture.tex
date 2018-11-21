@@ -91,13 +91,8 @@ programmers do not recognize the USB interface as a potential target for attack 
 one USB device can potentially compromise this USB device as part of a larger attack.
 
 Issues like these can in part be mitigated with host-based filtering, such as explicit whitelisting of physical USB
-ports for HID devices. In this case, however, the USB driver stack of the linux kernel running the USB VM remains as a
-very large attack surface. The USB device drivers in Linux in general are not a paragon of code quality, and since the
-device can choose which driver the kernel will load a flaw in any one of them suffices. Approaches such as whitelisting
-or explicit approval of driver loads interfere too much with a computer's day-to-day operation and thus are not
-generally implemented. Also, like any kind of application firewall the user would quickly be desensitized to the
-frequent but harmless warning message popping up decreasing the probability of the protection working in case of an
-actual attack by a large margin.
+ports for HID devices. In this case, however, the USB driver stack of the linux kernel running the USB VM remains as an
+attack surface.
 
 A possible secure solution for this problem would be to completely separate security-critical USB devices such as
 keyboard and mouse from everything else. A practical implementation of this would require two separate USB host
