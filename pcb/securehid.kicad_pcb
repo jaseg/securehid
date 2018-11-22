@@ -703,7 +703,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CBBAA24)
     (attr virtual)
-    (fp_text reference TP3 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP3 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -730,7 +730,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CC968FC)
     (attr virtual)
-    (fp_text reference TP47 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP47 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -4881,7 +4881,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CBEFE72)
     (attr virtual)
-    (fp_text reference TP1 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP1 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -4908,7 +4908,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CBF3D8C)
     (attr virtual)
-    (fp_text reference TP2 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP2 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -4935,7 +4935,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C49510A)
     (attr virtual)
-    (fp_text reference TP4 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP4 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -4962,7 +4962,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CB84290)
     (attr virtual)
-    (fp_text reference TP5 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP5 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -4989,7 +4989,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C493CA7)
     (attr virtual)
-    (fp_text reference TP6 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP6 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5016,7 +5016,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4901EF)
     (attr virtual)
-    (fp_text reference TP7 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP7 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5043,7 +5043,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C47DFE5)
     (attr virtual)
-    (fp_text reference TP8 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP8 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5070,7 +5070,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C496BCA)
     (attr virtual)
-    (fp_text reference TP9 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP9 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5124,7 +5124,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C49F6C2)
     (attr virtual)
-    (fp_text reference TP11 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP11 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5151,7 +5151,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C485D2E)
     (attr virtual)
-    (fp_text reference TP12 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP12 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5178,7 +5178,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4860F8)
     (attr virtual)
-    (fp_text reference TP13 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP13 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5205,7 +5205,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CB50D04)
     (attr virtual)
-    (fp_text reference TP14 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP14 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5232,7 +5232,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C486A3A)
     (attr virtual)
-    (fp_text reference TP15 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP15 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5259,7 +5259,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4A055A)
     (attr virtual)
-    (fp_text reference TP16 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP16 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5286,7 +5286,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C486BFA)
     (attr virtual)
-    (fp_text reference TP17 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP17 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5313,7 +5313,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4A139B)
     (attr virtual)
-    (fp_text reference TP18 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP18 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5340,7 +5340,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CF877DC)
     (attr virtual)
-    (fp_text reference TP19 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP19 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5367,7 +5367,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C936D5A)
     (attr virtual)
-    (fp_text reference TP20 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP20 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5394,7 +5394,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C48822E)
     (attr virtual)
-    (fp_text reference TP21 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP21 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5421,7 +5421,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4A15A3)
     (attr virtual)
-    (fp_text reference TP22 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP22 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5448,7 +5448,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CF8ADC6)
     (attr virtual)
-    (fp_text reference TP23 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP23 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5475,7 +5475,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C9684E2)
     (attr virtual)
-    (fp_text reference TP24 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP24 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5502,7 +5502,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C48868A)
     (attr virtual)
-    (fp_text reference TP25 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP25 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5529,7 +5529,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4A17AF)
     (attr virtual)
-    (fp_text reference TP26 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP26 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5556,7 +5556,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CF8B936)
     (attr virtual)
-    (fp_text reference TP27 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP27 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5583,7 +5583,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C969C2A)
     (attr virtual)
-    (fp_text reference TP28 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP28 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5610,7 +5610,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C48940B)
     (attr virtual)
-    (fp_text reference TP29 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP29 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5664,7 +5664,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96A276)
     (attr virtual)
-    (fp_text reference TP31 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP31 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5691,7 +5691,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C489AAB)
     (attr virtual)
-    (fp_text reference TP32 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP32 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5718,7 +5718,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96A49E)
     (attr virtual)
-    (fp_text reference TP33 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP33 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5772,7 +5772,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96B372)
     (attr virtual)
-    (fp_text reference TP35 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP35 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5799,7 +5799,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C48B64C)
     (attr virtual)
-    (fp_text reference TP36 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP36 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5826,7 +5826,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96BD12)
     (attr virtual)
-    (fp_text reference TP37 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP37 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5880,7 +5880,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96BF46)
     (attr virtual)
-    (fp_text reference TP39 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP39 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5907,7 +5907,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C48CF33)
     (attr virtual)
-    (fp_text reference TP40 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP40 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5934,7 +5934,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96CA1E)
     (attr virtual)
-    (fp_text reference TP41 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP41 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -5988,7 +5988,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C96DB03)
     (attr virtual)
-    (fp_text reference TP43 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP43 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6042,7 +6042,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C4A7F68)
     (attr virtual)
-    (fp_text reference TP45 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP45 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6069,7 +6069,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CC59D09)
     (attr virtual)
-    (fp_text reference TP46 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP46 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6096,7 +6096,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CC985C2)
     (attr virtual)
-    (fp_text reference TP48 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP48 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6123,7 +6123,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CC99F42)
     (attr virtual)
-    (fp_text reference TP49 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP49 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6150,7 +6150,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CC9AA61)
     (attr virtual)
-    (fp_text reference TP50 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP50 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6177,7 +6177,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56744)
     (attr virtual)
-    (fp_text reference TP51 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP51 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6204,7 +6204,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CD6F295)
     (attr virtual)
-    (fp_text reference TP52 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP52 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6231,7 +6231,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE5674C)
     (attr virtual)
-    (fp_text reference TP53 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP53 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6258,7 +6258,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CD6F29D)
     (attr virtual)
-    (fp_text reference TP54 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP54 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6285,7 +6285,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56753)
     (attr virtual)
-    (fp_text reference TP55 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP55 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6312,7 +6312,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CD6F2A4)
     (attr virtual)
-    (fp_text reference TP56 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP56 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6339,7 +6339,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE5675A)
     (attr virtual)
-    (fp_text reference TP57 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP57 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6366,7 +6366,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CD6F2AB)
     (attr virtual)
-    (fp_text reference TP58 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP58 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6393,7 +6393,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56761)
     (attr virtual)
-    (fp_text reference TP59 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP59 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6420,7 +6420,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CD6F2B2)
     (attr virtual)
-    (fp_text reference TP60 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP60 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6447,7 +6447,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE5676C)
     (attr virtual)
-    (fp_text reference TP61 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP61 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6474,7 +6474,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CDA3ACF)
     (attr virtual)
-    (fp_text reference TP62 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP62 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6501,7 +6501,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56774)
     (attr virtual)
-    (fp_text reference TP63 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP63 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6528,7 +6528,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CDA3AD7)
     (attr virtual)
-    (fp_text reference TP64 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP64 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6555,7 +6555,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE5677B)
     (attr virtual)
-    (fp_text reference TP65 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP65 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6582,7 +6582,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CDA3ADE)
     (attr virtual)
-    (fp_text reference TP66 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP66 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6609,7 +6609,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56782)
     (attr virtual)
-    (fp_text reference TP67 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP67 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6636,7 +6636,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CDA3AE5)
     (attr virtual)
-    (fp_text reference TP68 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP68 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6663,7 +6663,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56789)
     (attr virtual)
-    (fp_text reference TP69 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP69 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6690,7 +6690,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CDA3AEC)
     (attr virtual)
-    (fp_text reference TP70 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP70 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6717,7 +6717,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE56794)
     (attr virtual)
-    (fp_text reference TP71 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP71 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6744,7 +6744,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE11B57)
     (attr virtual)
-    (fp_text reference TP72 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP72 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6771,7 +6771,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE5679C)
     (attr virtual)
-    (fp_text reference TP73 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP73 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6798,7 +6798,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE11B5F)
     (attr virtual)
-    (fp_text reference TP74 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP74 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6825,7 +6825,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE567A3)
     (attr virtual)
-    (fp_text reference TP75 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP75 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6852,7 +6852,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE11B66)
     (attr virtual)
-    (fp_text reference TP76 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP76 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6879,7 +6879,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE567AA)
     (attr virtual)
-    (fp_text reference TP77 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP77 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6906,7 +6906,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CE11B6D)
     (attr virtual)
-    (fp_text reference TP78 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP78 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6933,7 +6933,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CF09FE7)
     (attr virtual)
-    (fp_text reference TP79 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP79 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -6960,7 +6960,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5CF0B43E)
     (attr virtual)
-    (fp_text reference TP80 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP80 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -7525,7 +7525,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5BFF0539)
     (attr virtual)
-    (fp_text reference TP81 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP81 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -7552,7 +7552,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C0015E1)
     (attr virtual)
-    (fp_text reference TP82 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP82 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
@@ -7579,7 +7579,7 @@
     (tags "test point SMD pad rectangle square")
     (path /5C13B94B)
     (attr virtual)
-    (fp_text reference TP83 (at 0 1.448) (layer B.SilkS)
+    (fp_text reference TP83 (at 0 1.448) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_text value TestPoint_Alt (at 0 -1.55) (layer B.Fab)
