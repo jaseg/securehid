@@ -1235,7 +1235,7 @@ F 1 "AO3400" H 9556 9745 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23" H 9550 9625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 9350 9700 50  0001 L CNN
 	1    9350 9700
-	-1   0    0    1   
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:LED D4
@@ -1509,7 +1509,7 @@ F 1 "AO3400" H 8256 10595 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23" H 8250 10475 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 8050 10550 50  0001 L CNN
 	1    8050 10550
-	-1   0    0    1   
+	-1   0    0    -1  
 $EndComp
 Wire Wire Line
 	7950 10350 7950 10300
@@ -1593,7 +1593,6 @@ Wire Wire Line
 	7950 10750 7950 10850
 Wire Wire Line
 	7950 10750 8500 10750
-Connection ~ 7950 10750
 Wire Wire Line
 	8900 10550 9400 10550
 Text Label 9400 10550 2    50   ~ 0
@@ -4091,4 +4090,7 @@ F 3 "" H 14400 3700 50  0001 C CNN
 	1    14400 3700
 	1    0    0    -1  
 $EndComp
+Text Notes 12150 6300 0    50   ~ 0
+Todo:\n- Fix 32kHz crystal footprint to something available\n- Fix CR2032 holder footprint to top-loading type\n- Fix MicroUSB footprint (cross-check)
+Connection ~ 7950 10750
 $EndSCHEMATC
