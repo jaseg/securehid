@@ -3,13 +3,13 @@
 \usepackage[a4paper,textwidth=17cm, top=2cm, bottom=3.5cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[
-	backend=biber,
-	style=numeric,
-	natbib=true,
-	url=true, 
-	doi=true,
-	eprint=false
-	]{biblatex}
+    backend=biber,
+    style=numeric,
+    natbib=true,
+    url=true, 
+    doi=true,
+    eprint=false
+    ]{biblatex}
 \addbibresource{directions.bib}
 \usepackage{amssymb,amsmath}
 \usepackage{listings}
@@ -26,12 +26,17 @@
 \usepackage{graphicx,color}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{footmisc}
+\usepackage{array}
 \usepackage[underline=false]{pgf-umlsd}
 \usetikzlibrary{calc}
 %\usepackage[pdftex]{graphicx,color}
 %\usepackage{epstopdf}
+
 \newcommand{\foonote}[1]{\footnote{#1}}
 \newcommand{\degree}{\ensuremath{^\circ}}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
 \author{Sebastian Götte {\texttt<secureusb@jaseg.net>} @Mori lab, Waseda University}
 \title{Research directions in secure USB devices}
 \date{November 19 2018}
@@ -54,6 +59,23 @@ Research exists in various directions.
         USB\cite{arun01,uzun01,kobsa01,saxena01}.
     \item Compartmentalized systems such as QubesOS have been implemented
 \end{itemize}
+
+\begin{table}
+    \setlength{\extrarowheight}{5pt}
+    \begin{tabular}{l|P{10mm}|P{15mm}|P{15mm}|P{15mm}|P{17mm}|P{25mm}|}
+                                &\multicolumn{3}{c|}{\bfseries Attacks}                                             & \multicolumn{2}{c|}{\bfseries Eavesdropping} & \multirow{2}{25mm}{\centering\bfseries Backwards\newline compatible} \\\cline{2-6}
+                                & \bfseries HID     &\bfseries Host\newline exploit &\bfseries Device\newline exploit&\bfseries Bus-level &\bfseries Physical layer    & \\\hline
+        Firewalls               & $\bigcirc$        & $\triangle$                   & $\times$                      & $\triangle$   & $\times$          & $\bigcirc$ \\
+        Device authentication   & $\bigcirc$        & $\times$                      & $\times$                      & $\triangle$   & $\times$          & $\times$ \\
+        Bus encryption          & $\triangle$       & $\times$                      & $\times$                      & $\bigcirc$    & $\bigcirc$        & $\times$ \\
+        Plain QubesOS setup\footnotemark 
+                                & $\triangle$       & $\triangle$                   & $\triangle$                   & $\triangle$   & $\times$          & $\bigcirc$ \\
+        Our work                & $\bigcirc$        & $\bigcirc$                    & $\bigcirc$                    & $\bigcirc$    & $\bigcirc$        & $\bigcirc$
+    \end{tabular}
+    \caption{Comparison of approaches to USB security}
+    \label{approach_comparison}
+\end{table}
+\footnotetext{Requires separate USB host controller for HIDs}
 
 Overall, QubesOS is the only significant practical advance towards securing this interface. Other approaches have not
 been successful so far. A likely reason for this is large market inertia and necessary backwards-compatibility.
@@ -96,6 +118,19 @@ laptops, or to simply unplug the microphone when not used.
 Since sensitive HIDs are isolated from other USB devices effectively on a separate bus, bus-level attacks such as
 \textcite{neugschwandtner01} are entirely prevented. Even much scarier physical attacks on USB such as \textcite{su01}
 are prevented given an adequate hardware implementation, which fortunately is no too complicated.
+
+\subsection{Diagram of a conventional setup}
+\begin{figure}[H]
+    \includegraphics[scale=0.8]{system_diagram_without_secureusb.eps}
+    \caption{Diagram of a conventional unprotected system}
+    \label{diagram_without}
+\end{figure}
+\subsection{Diagram of a SecureHID-protected system}
+\begin{figure}[H]
+    \includegraphics[scale=0.8]{system_diagram_with_secureusb.eps}
+    \caption{Diagram of a SecureHID-protected system}
+    \label{diagram_with}
+\end{figure}
 
 \subsection{Key points}
 \begin{itemize}
@@ -156,8 +191,8 @@ A working prototype has been completed.
         \end{itemize}
     \item Benchmark cryptography routines (will likely turn out to be ``wayyy fast'' for HID, fast enough for full-speed
         USB. High-speed cannot be done with the current architecture as we can't get data out the chip at high-speed
-		data rates. \textcite{srivaths01} raise the issue of running crypto on embedded systems, but in this case it
-		turns out with somewhat modern hardware and cryptography there is no problem at all.
+        data rates. \textcite{srivaths01} raise the issue of running crypto on embedded systems, but in this case it
+        turns out with somewhat modern hardware and cryptography there is no problem at all.
 \end{itemize}
 
 \newpage
@@ -165,65 +200,65 @@ A working prototype has been completed.
 \section{High-level protocol design}
 
 \begin{figure}
-	\centering
-	\begin{sequencediagram}
-		\newinst{kbd}{Keyboard}
-		\newinst[3]{dev}{SecureHID}
-		\newinst[5]{host}{Host}
+    \centering
+    \begin{sequencediagram}
+        \newinst{kbd}{Keyboard}
+        \newinst[3]{dev}{SecureHID}
+        \newinst[5]{host}{Host}
 
-		\mess{host}{}{dev}
-		\path (mess from) -- (mess to) node[midway, above] {\emph{COBS sync (null byte)}};
-		\mess{host}{}{dev}
-		\draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Initiate Handshake}};
+        \mess{host}{}{dev}
+        \path (mess from) -- (mess to) node[midway, above] {\emph{COBS sync (null byte)}};
+        \mess{host}{}{dev}
+        \draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Initiate Handshake}};
 
-		\begin{sdblock}{Noise XX handshake}{}
-			\mess{host}{}{dev}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, e$};
-			\mess{dev}{}{host}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, e,ee,s,es$};
-			\mess{host}{}{dev}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, s,se$};
-		\end{sdblock}
+        \begin{sdblock}{Noise XX handshake}{}
+            \mess{host}{}{dev}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, e$};
+            \mess{dev}{}{host}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, e,ee,s,es$};
+            \mess{host}{}{dev}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Handshake}, s,se$};
+        \end{sdblock}
 
-		\begin{sdblock}{Pairing}{Triggered by user interaction after unsuccessful handshake}
-			\mess{dev}{}{host}
-			\draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Pairing Start}};
-			\stepcounter{seqlevel}
+        \begin{sdblock}{Pairing}{Triggered by user interaction after unsuccessful handshake}
+            \mess{dev}{}{host}
+            \draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Pairing Start}};
+            \stepcounter{seqlevel}
 
-			\mess{kbd}{keystroke}{dev}
-			\addtocounter{seqlevel}{-1}
-			\mess{dev}{}{host}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Pairing Input},E(\text{keystroke})$};
-			\stepcounter{seqlevel}
-			\mess{kbd}{}{dev}
-			\addtocounter{seqlevel}{-1}
-			\path (mess from) -- (mess to) node[midway, above] {keystroke};
-			\path (mess from) -- (mess to) node[midway, above, yshift=5mm] {$\vdots$};
-			\mess{dev}{}{host}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Pairing Input},E(\text{keystroke})$};
-			\path (mess from) -- (mess to) node[midway, above, yshift=5mm] {$\vdots$};
-			\stepcounter{seqlevel}
+            \mess{kbd}{keystroke}{dev}
+            \addtocounter{seqlevel}{-1}
+            \mess{dev}{}{host}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Pairing Input},E(\text{keystroke})$};
+            \stepcounter{seqlevel}
+            \mess{kbd}{}{dev}
+            \addtocounter{seqlevel}{-1}
+            \path (mess from) -- (mess to) node[midway, above] {keystroke};
+            \path (mess from) -- (mess to) node[midway, above, yshift=5mm] {$\vdots$};
+            \mess{dev}{}{host}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Pairing Input},E(\text{keystroke})$};
+            \path (mess from) -- (mess to) node[midway, above, yshift=5mm] {$\vdots$};
+            \stepcounter{seqlevel}
 
-			\mess{kbd}{}{dev}
-			\addtocounter{seqlevel}{-1}
-			\path (mess from) -- (mess to) node[midway, above] {\emph{enter}};
-			\mess{dev}{}{host}
-			\draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Pairing Success}};
-		\end{sdblock}
+            \mess{kbd}{}{dev}
+            \addtocounter{seqlevel}{-1}
+            \path (mess from) -- (mess to) node[midway, above] {\emph{enter}};
+            \mess{dev}{}{host}
+            \draw[->,>=angle 60] (mess from) -- (mess to) node[midway, above] {\textsc{Pairing Success}};
+        \end{sdblock}
 
-		\begin{sdblock}{Input passthrough}{Started after successful handshake or pairing}
-			\mess{kbd}{keystroke}{dev}
-			\path (mess from) -- (mess to) node[midway, below, yshift=-2mm] {$\vdots$};
+        \begin{sdblock}{Input passthrough}{Started after successful handshake or pairing}
+            \mess{kbd}{keystroke}{dev}
+            \path (mess from) -- (mess to) node[midway, below, yshift=-2mm] {$\vdots$};
 
-			\addtocounter{seqlevel}{-1}
-			\mess{dev}{}{host}
-			\path (mess from) -- (mess to) node[midway, above] {$\textsc{Data},E(\text{keystroke})$};
-			\path (mess from) -- (mess to) node[midway, below, yshift=-2mm] {$\vdots$};
-			\stepcounter{seqlevel}
-		\end{sdblock}
-	\end{sequencediagram}
-	\caption{A successful prototype protocol pairing}
-	\label{protocol_diagram}
+            \addtocounter{seqlevel}{-1}
+            \mess{dev}{}{host}
+            \path (mess from) -- (mess to) node[midway, above] {$\textsc{Data},E(\text{keystroke})$};
+            \path (mess from) -- (mess to) node[midway, below, yshift=-2mm] {$\vdots$};
+            \stepcounter{seqlevel}
+        \end{sdblock}
+    \end{sequencediagram}
+    \caption{A successful prototype protocol pairing}
+    \label{protocol_diagram}
 \end{figure}
 
 The basic protocol consists of two stages: \textsc{pairing} and \textsc{data}. When the device powers up, it enters
@@ -248,33 +283,33 @@ A successful protocol run always starts like this:
 \item \textsc{host} initiates pairing by sending \textsc{initiate handshake} to device
 \item \textsc{device} and \textsc{host} follow noise state machine for \textsc{XX} handshake
 \item After the handshake completes, both \textsc{device} and \textsc{host} have received each other's static public key
-	$rs$ and established a shared secret connection key. At this point, the possibility of an MITM attacker having
-	actively intercepted the handshake remains.
+    $rs$ and established a shared secret connection key. At this point, the possibility of an MITM attacker having
+    actively intercepted the handshake remains.
 \item \textbf{Channel binding.} Both \textsc{device} and \textsc{host} calculate the \emph{handshake hash} as per noise spec\cite{perrin01}. This
-	hash uniquely identifies this session and depends on both local and remote ephemeral and static keys $le, re, ls,
-	rs$.  Both parties encode a 64-bit part of this hash into a sequence of english words by dictionary lookup. This
-	sequence of words is called the \emph{fingerprint} of the connection.
+    hash uniquely identifies this session and depends on both local and remote ephemeral and static keys $le, re, ls,
+    rs$.  Both parties encode a 64-bit part of this hash into a sequence of english words by dictionary lookup. This
+    sequence of words is called the \emph{fingerprint} of the connection.
 \item \textsc{host} prompts the user to enter the \emph{fingerprint} into a keyboard connected to \textsc{device}.
 \item As the user enters the \emph{fingerprint}, \textsc{device} relays any input over the yet-unauthenticated encrypted
-	noise channel to \textsc{host}. \textsc{host} displays the received user input in plain text in a regular input
-	field in the pairing GUI. This display is only for user convenience and not relevant to the cryptographic handshake.
-	A consequence of this is that a MITM could observe the \emph{fingerprint}\footnote{
-		A MITM could also modify the fingerprint information sent from \textsc{device} to \textsc{host}. This would be
-		very obvious to the user, since the fingerprint appearing on the \textsc{host} screen would differ from what she
-		types.
-	}.
+    noise channel to \textsc{host}. \textsc{host} displays the received user input in plain text in a regular input
+    field in the pairing GUI. This display is only for user convenience and not relevant to the cryptographic handshake.
+    A consequence of this is that a MITM could observe the \emph{fingerprint}\footnote{
+        A MITM could also modify the fingerprint information sent from \textsc{device} to \textsc{host}. This would be
+        very obvious to the user, since the fingerprint appearing on the \textsc{host} screen would differ from what she
+        types.
+    }.
 \item When the user has completed entering the fingerprint, the device checks the calculated fingerprint against the
-	entered data. If both match, the host is signalled \textsc{success} and \textsc{data} phase is entered. If they do
-	not match, the host is signalled \textsc{failure}\footnote{
-		Note that this means a MITM could intercept the \textsc{failure} message and forge a \textsc{success} message.
-		This means both are just for user convenience \emph{absent} an attacker. If an attacker is present, she will be
-		caught in the next pairing step.
-	} and \textsc{pairing} state is re-entered unless the maximum number of tries since powerup has been exceeded.
-	Failure is indicated to the user by \textsc{device} through a very annoying beep accompanied by angrily flashing
-	LEDs.
+    entered data. If both match, the host is signalled \textsc{success} and \textsc{data} phase is entered. If they do
+    not match, the host is signalled \textsc{failure}\footnote{
+        Note that this means a MITM could intercept the \textsc{failure} message and forge a \textsc{success} message.
+        This means both are just for user convenience \emph{absent} an attacker. If an attacker is present, she will be
+        caught in the next pairing step.
+    } and \textsc{pairing} state is re-entered unless the maximum number of tries since powerup has been exceeded.
+    Failure is indicated to the user by \textsc{device} through a very annoying beep accompanied by angrily flashing
+    LEDs.
 \item \textbf{Data phase.} \textsc{host} asks the user for confirmation of pairing \emph{in case the device did not sound an alarm} by
-	pressing a button on the GUI. When the user does this, the host enters \textsc{data} state and starts input
-	passthrough.
+    pressing a button on the GUI. When the user does this, the host enters \textsc{data} state and starts input
+    passthrough.
 \end{enumerate}
 
 Roughly speaking, this protocol is secure given that the only way to MITM a (EC)DH key exchange is to perform two (EC)DH key exchanges with both parties, then relay messages. Since both parties have different static keys, the resulting two (EC)DH sessions will have different handshake hashes under the noise framework. The channel binding step reliably detects this condition through an out-of-band transmission of the \textsc{host} handshake hash to \textsc{device}.
@@ -311,14 +346,14 @@ The only specialty here is that this OOB transmission is relayed back from \text
 %\begin{figure}
 %\tikzstyle{block} = [rectangle, draw, text centered, minimum height=4em]
 %\begin{tikzpicture}[node distance=2cm, auto]
-%	\node[block](matrix){Key matrix}
-%	\node[block](hidctrl){Keyboard controller}
-%	\node[block](hubs){USB hubs}
-%	\node[block](roothub){USB host controller}
-%	\node[block](pcie){PCIe bus}
-%	\node[block](sys-usb-kernel){USB VM kernel}
-%	\node[block](sys-usb-agent){USB VM userspace agent}
-%	\node[block](dom0){dom0 agent}
+%   \node[block](matrix){Key matrix}
+%   \node[block](hidctrl){Keyboard controller}
+%   \node[block](hubs){USB hubs}
+%   \node[block](roothub){USB host controller}
+%   \node[block](pcie){PCIe bus}
+%   \node[block](sys-usb-kernel){USB VM kernel}
+%   \node[block](sys-usb-agent){USB VM userspace agent}
+%   \node[block](dom0){dom0 agent}
 %\end{tikzpicture}
 %\label{qubes-hid-stack}
 %\caption{The USB HID input stack in a QubesOS setup}
