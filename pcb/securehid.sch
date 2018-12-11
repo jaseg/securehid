@@ -1364,7 +1364,7 @@ F 1 "AO3400" H 11856 9745 50  0000 L CNN
 F 2 "TO_SOT_Packages_SMD:SOT-23" H 11850 9625 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7002.pdf" H 11650 9700 50  0001 L CNN
 	1    11650 9700
-	-1   0    0    1   
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:LED D10
@@ -4062,7 +4062,7 @@ F 3 "" H 14400 3700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 12150 6300 0    50   ~ 0
-Todo:\n[all done!]
+Todo:\nConsider flipping some components to match top-mount case\nUSB hub chip doesn't work and gets warm\nQ1 or Q2 wasn't oriented correctly. Fixed in schematic, needs to be fixed in PCB
 Connection ~ 7950 10750
 Wire Wire Line
 	10700 7200 10700 7250
@@ -4084,4 +4084,5 @@ Wire Wire Line
 Connection ~ 11150 7050
 Wire Wire Line
 	11150 7050 11150 7250
+NoConn ~ 1950 400 
 $EndSCHEMATC

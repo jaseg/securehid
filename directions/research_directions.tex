@@ -20,6 +20,17 @@
 \usepackage{multirow}
 \usepackage{multicol}
 \usepackage{tikz}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{fit}
+\usetikzlibrary{patterns}  
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
+
 \usepackage{hyperref}
 \usepackage{tabularx}
 \usepackage{commath}
@@ -50,14 +61,14 @@ Off-the-shelf USB HID attack tools exist. In particular from a security point of
 WebUSB\cite{misc01} are set to increase this already large attack surface even further.
 
 \section{State of the art}
-Research exists in various directions.
+Several ways to secure the USB interface have been proposed that can be broadly categorized as follows.
 \begin{itemize}
-    \item USB firewalls have been proposed\cite{tian01,angel01,kang01,bates01,loe01}.
-    \item USB device authentication has been proposed\cite{usb01,griscioli01,wang01,he01}.
-    \item USB bus encryption has been proposed\cite{neugschwandtner01,weinstein01}.
+    \item USB firewalls are software or hardware that protects the host from requests deemed invalid similar to a network firewall\cite{tian01,angel01,kang01,bates01,loe01}.
+    \item USB device authentication uses some sort of user feedback or public key infrastructure to authenticate the device when it connects\cite{usb01,griscioli01,wang01,he01}.
+    \item USB bus encryption encrypts the raw USB payloads to ward off eavesdroppers\cite{neugschwandtner01,weinstein01}.
     \item For wireless protocols, every conceivable pairing model has been tried. However, not many have been applied to
         USB\cite{arun01,uzun01,kobsa01,saxena01}.
-    \item Compartmentalized systems such as QubesOS have been implemented
+    \item Compartmentalized systems such as QubesOS separate vulnerable components with large attack surface such as the USB device drivers into VMs to not inhibit exploitation but mitigate its consequences.
 \end{itemize}
 
 \begin{table}
@@ -146,7 +157,7 @@ A working prototype has been completed.
 \begin{itemize}
     \item Rough protocol design
     \item Protocol implementation based on \textcite{perrin01} using noise-c (microcontroller) and noiseprotocol (python/host)
-    \item SRAM-based key storage with SRAM wear prevention
+    \item SRAM-based key storage with SRAM wear levelling
     \item host/device signature checking
     \item host/device key generation
     \item proper circuit design because I was bored last weekend (see appendix \ref{ch:renderings})
@@ -173,7 +184,7 @@ A working prototype has been completed.
             \item IMHO the pairing scheme is the most interesting part of this project from a scientific point of view
         \end{itemize}
     \item Elaborate overall security properties of QubesOS-based system
-    \item Elaborate possible DisplayPort/HDMI-based display encryption
+    \item Elaborate possible DisplayPort/HDMI-based display encryption $\rightarrow$ Bunnie's NeTV2 w/ HDMI/eDP converter
     \item Elaborate possible encrypted remote input (SSH) setups
         \begin{itemize}
             \item This might turn out to be really interesting
@@ -181,7 +192,6 @@ A working prototype has been completed.
                 out to be complex to implement securely
             \item Considering complexity, this might turn into its own research project
         \end{itemize}
-    \item Create custom hardware prototype
     \item Showcase secure hardware interface design, contrast with wireguard protocol design
         \begin{itemize}
             \item Formally derive handshake security properties
@@ -189,6 +199,8 @@ A working prototype has been completed.
             \item Formally verify and thouroughly unit-test the host/device protocol implementation on all layers
             \item IMHO this is the most interesting part of this project from an engineering point of view
         \end{itemize}
+% Waiting
+    \item Create custom hardware prototype
     \item Benchmark cryptography routines (will likely turn out to be ``wayyy fast'' for HID, fast enough for full-speed
         USB. High-speed cannot be done with the current architecture as we can't get data out the chip at high-speed
         data rates. \textcite{srivaths01} raise the issue of running crypto on embedded systems, but in this case it
@@ -199,6 +211,7 @@ A working prototype has been completed.
 \appendix
 \section{High-level protocol design}
 
+\subsection{Protocol description}
 \begin{figure}
     \centering
     \begin{sequencediagram}
@@ -261,6 +274,135 @@ A working prototype has been completed.
     \label{protocol_diagram}
 \end{figure}
 
+\begin{figure}[h!]
+	\centering
+    \begin{tikzpicture}[thick,scale=0.8]
+        \node(protoname) at (0, 0){\texttt{"Noise\_XX\_25519\_ChaChaPoly\_BLAKE2s"}};
+        \node[draw,thick,below=1em of protoname] (inithash) {$H$};
+		\node[below=2em of inithash, xshift= 10em] (ck){$ck$};
+		\node[below=2em of inithash, xshift=-3em] (h){$h$};
+		\coordinate (labelbase) at (-5,0);
+
+        \draw[->] (protoname) -- (inithash);
+		\draw[->] (inithash) -- ++(0,-2em) coordinate(im0) -| (ck);
+		\draw[->] (im0) -| (h);
+		
+		\node[right=7em of ck] (ei){$e_i$};
+		\node[right=8.5em of ck] (er){$e_r$};
+		\node[right=10em of ck] (si){$s_i$};
+		\node[right=11.5em of ck] (sr){$s_r$};
+
+
+		\node[draw,thick,below=1em of h] (mix0){MixHash};
+		\node[left=1em of mix0] (str0){\texttt{""}};
+		\node[left] at (str0 -| labelbase) (lbl0){\parbox{10em}{\raggedleft No preamble,\\use empty string}};
+
+		\draw[->] (h) -- (mix0);
+		\draw[->] (str0) -- (mix0);
+		
+		\node[draw,thick,below=2em of mix0] (mix1){MixHash};
+		\node[left] at (mix1 -| labelbase) (tok0){$e\rightarrow $};
+		\draw[->] (mix0) -- (mix1);
+		\draw[->] (ei) |- (mix1);
+
+		\node[draw,thick,below=2em of mix1] (mix2){MixHash};
+		\node[left=1em of mix2] (str2){\texttt{""}};
+		\node[left] at (str2 -| labelbase) (lbl2){\parbox{10em}{\raggedleft EncryptAndHash\\No payload and\\$k$ unset}};
+		\draw[->] (str2) -- (mix2);
+		\draw[->] (mix1) -- (mix2);
+
+		\node[draw,thick,below=2em of mix2] (mix3){MixHash};
+		\node[left] at (mix3 -| labelbase) (tok3){$e\leftarrow $};
+		\draw[->] (mix2) -- (mix3);
+		\draw[->] (er) |- (mix3);
+
+		\coordinate (sync4) at (mix3 -| ck);
+		\node[draw,thick,below=2em of sync4] (kmix1){MixKey};
+		\node[left] at (kmix1 -| labelbase) (tok4){$ee\leftarrow $};
+		\node[draw,thick,right=1em of kmix1] (dh0){ECDH};
+		\draw[->] (ck) -- (kmix1);
+		\draw[->] (ei) |- ($ (dh0.east) + (0,0.2em) $);
+		\draw[->] (er) |- ($ (dh0.east) - (0,0.2em) $);
+		\draw[->] (dh0) -- (kmix1);
+
+		\coordinate (sync5) at (kmix1 -| h);
+		\node[draw,thick,below=2em of sync5] (mix5){MixHash};
+		\node[draw,thick,right=2em of mix5] (enc5){$E$};
+		\node[left] at (mix5 -| labelbase) (lbl5){$s\leftarrow $};
+		\draw[->] (mix3) -- (mix5);
+		\draw[->] (enc5) -- (mix5);
+		\draw[->] (kmix1) -| (enc5);
+		\draw[->] (sr) |- (enc5);
+
+		\coordinate (sync6) at (mix5 -| ck);
+		\node[draw,thick,below=2em of sync6] (kmix6){MixKey};
+		\node[left] at (kmix6 -| labelbase) (tok6){$es\leftarrow $};
+		\node[draw,thick,right=1em of kmix6] (dh6){ECDH};
+		\draw[->] (kmix1) -- (kmix6);
+		\draw[->] (ei) |- ($ (dh6.east) + (0,0.2em) $);
+		\draw[->] (sr) |- ($ (dh6.east) - (0,0.2em) $);
+		\draw[->] (dh6) -- (kmix6);
+
+		\coordinate (sync7) at (kmix6 -| h);
+		\node[draw,thick,below=2em of sync7] (mix7){MixHash};
+		\node[draw,thick,right=2em of mix7] (enc7){$E$};
+		\node[right=1em of enc7] (str7){\texttt{""}};
+		\node[left] at (mix7 -| labelbase) (lbl7){\parbox{10em}{\raggedleft DecryptAndHash\\ No payload}};
+		\draw[->] (mix5) -- (mix7);
+		\draw[->] (enc7) -- (mix7);
+		\draw[->] (kmix1.west) -- ++(-2em,0) -- ++(0,-5em) -| (enc7);
+		\draw[->] (str7) -- (enc7);
+
+% ---
+		\node[draw,thick,below=2em of mix7] (mix8){MixHash};
+		\node[draw,thick,right=2em of mix8] (enc8){$E$};
+		\node[left] at (mix8 -| labelbase) (lbl8){$s\rightarrow $};
+		\draw[->] (mix7) -- (mix8);
+		\draw[->] (enc8) -- (mix8);
+		\draw[->] (kmix6.west) -- ++(-2em,0) -- ++(0,-5em) -| (enc8);
+		\draw[->] (si) |- (enc8);
+
+		\coordinate (sync9) at (mix8 -| ck);
+		\node[draw,thick,below=2em of sync9] (kmix9){MixKey};
+		\node[left] at (kmix9 -| labelbase) (tok9){$se\rightarrow $};
+		\node[draw,thick,right=1em of kmix9] (dh9){ECDH};
+		\draw[->] (kmix6) -- (kmix9);
+		\draw[->] (si) |- ($ (dh9.east) - (0,0.2em) $);
+		\draw[->] (er) |- ($ (dh9.east) + (0,0.2em) $);
+		\draw[->] (dh9) -- (kmix9);
+
+		\coordinate (sync10) at (kmix9 -| h);
+		\node[draw,thick,below=2em of sync10] (mix10){MixHash};
+		\node[draw,thick,right=2em of mix10] (enc10){$E$};
+		\node[right=1em of enc10] (str10){\texttt{""}};
+		\node[left] at (mix10 -| labelbase) (lbl10){\parbox{10em}{\raggedleft EncryptAndHash\\ No payload}};
+		\draw[->] (mix8) -- (mix10);
+		\draw[->] (enc10) -- (mix10);
+		\draw[->] (kmix9.west) -| (enc10);
+		\draw[->] (str10) -- (enc10);
+
+% ---
+		\coordinate (sync11) at (mix10 -| ck);
+		\node[draw,thick,below=5em of sync11,xshift=-1em] (finkdf){HKDF};
+		\node[below=2em of finkdf,xshift=-1em] (k1){$k_1$};
+		\node[below=2em of finkdf,xshift= 1em] (k2){$k_2$};
+		\node[left=1em of finkdf,yshift=2em] (str11){\texttt{""}};
+		\draw[->] (kmix9) -- (finkdf.north -| kmix9);
+		\draw[->] (k1 |- finkdf.south) -- (k1);
+		\draw[->] (k2 |- finkdf.south) -- (k2);
+		\draw[->] (str11) -| ($ (finkdf.north) - (1em,0) $);
+
+		\coordinate (sync11a) at (finkdf.south -| h);
+		\node[below=2em of sync11a] (hout){$h$};
+		\draw[->] (mix10) -- (hout);
+
+		\node[left] at (finkdf -| labelbase) (lbl13){\parbox{10em}{\raggedleft Split}};
+
+    \end{tikzpicture}
+    \caption{Cryptographic flowchart of Noise XX handshake}
+    \label{crypto_diagram}
+\end{figure}
+
 The basic protocol consists of two stages: \textsc{pairing} and \textsc{data}. When the device powers up, it enters
 \textsc{pairing} state. When the host enumerates a new device, it enters \textsc{pairing} state. If any fatal
 communication errors occur, both host and device re-enter \textsc{pairing} state. To make the implementation robust
@@ -270,7 +412,6 @@ device to re-enter \textsc{pairing} state a limited number of times after poweru
 \textsc{pairing} state consists of a number of substates as set by \textcite{perrin01}. The device runs noise's
 \textsc{XX} scheme, i.e. both host and device each contribute both one ephemeral key $e$ and one static key $s$ to the
 handshake, and the public halves of the static keys are transmitted during handshake encrypted by the emphemeral keys.
-This scheme provides forward-secrecy without MITM protection.
 
 The cryptographic primitives instantiated in the prototype are X25519 for the ECDH primitive, BLAKE2s as a hash and
 ChaCha20-Poly1305 as AEAD for the data phase. ECDH instead of traditional DH was chosen for its small key size and fast
@@ -312,9 +453,32 @@ A successful protocol run always starts like this:
     passthrough.
 \end{enumerate}
 
-Roughly speaking, this protocol is secure given that the only way to MITM a (EC)DH key exchange is to perform two (EC)DH key exchanges with both parties, then relay messages. Since both parties have different static keys, the resulting two (EC)DH sessions will have different handshake hashes under the noise framework. The channel binding step reliably detects this condition through an out-of-band transmission of the \textsc{host} handshake hash to \textsc{device}.
+Roughly speaking, this protocol is secure given that the only way to MITM a (EC)DH key exchange is to perform two (EC)DH
+key exchanges with both parties, then relay messages. Since both parties have different static keys, the resulting two
+(EC)DH sessions will have different handshake hashes under the noise framework. The channel binding step reliably
+detects this condition through an out-of-band transmission of the \textsc{host} handshake hash to \textsc{device}.
 
-The only specialty here is that this OOB transmission is relayed back from \textsc{device} to \textsc{host} allowing the MITM to intercept it. This is only done for user convenience absent a MITM and the result is discarded by \textsc{host}. Since the handshake hash does as a hash does not leak any sensitive information about the keys used during the handshake, it being exposed does not impact protocol security.
+The only specialty here is that this OOB transmission is relayed back from \textsc{device} to \textsc{host} allowing the
+MITM to intercept it. This is only done for user convenience absent a MITM and the result is discarded by \textsc{host}.
+Since the handshake hash does as a hash does not leak any sensitive information about the keys used during the
+handshake, it being exposed does not impact protocol security.
+
+\subsection{Protocol verifictation}
+According to \textcite{perrin01} and proven by \textcite{kobeissi01} Noise's XX pattern provides strong forward-secrecy,
+sender and receiver authentication and key compromise impersonation resistance. Strong forward secrecy means an attacker
+can only decrypt messages by compromising the receivers private key and performing an active impersonation.
+
+Strong forward secrecy rules out both physical and protocol-level eavesdropping attacks by malicious USB devices and
+implies that an attacker can never decrypt past protocol sessions. An implication of the static key checks done on both
+sides of the connection is that an attacker would need to compromise both host and device in order to remain undetected
+for e.g. keylogging.  Compromising only one party the worst that can be done is impersonating the SecureHID device to
+perform a classical HID attack. In this case, the attacker cannot read user input.  The user would notice this by
+SecureHID indicating a not connected status and no input being accepted.
+% FIXME possibly detect this by having session counter etc.?
+
+To verify that these security properties extend to the overall SecureHID protocol it suffices to show that the SecureHID
+implementation adheres to Noise XX, i.e. the handshake is correctly performed, both sides' static keys are verified and
+all data is encapsulated in Noise messages after the handshake has ended.
 
 \section{PCB design renderings}
 \label{ch:renderings}
