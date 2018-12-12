@@ -276,71 +276,85 @@ A working prototype has been completed.
 
 \begin{figure}[h!]
 	\centering
-    \begin{tikzpicture}[thick,scale=0.8]
+	\tikzset{%
+		h/.style = {->, very thick},
+		ck/.style = {->, very thick},
+		key/.style = {->},
+		ki/.style = {key, color=red},
+		kr/.style = {key, color=red},
+		ke/.style = {dashed},
+		ks/.style = {solid},
+		phaselbl/.style = {font=\bfseries, anchor=west}
+	}
+    \begin{tikzpicture}[scale=0.8]
         \node(protoname) at (0, 0){\texttt{"Noise\_XX\_25519\_ChaChaPoly\_BLAKE2s"}};
         \node[draw,thick,below=1em of protoname] (inithash) {$H$};
-		\node[below=2em of inithash, xshift= 10em] (ck){$ck$};
-		\node[below=2em of inithash, xshift=-3em] (h){$h$};
+		\node[below=2em of inithash, xshift= 6.5em] (ck){$ck$};
+		\node[below=2em of inithash, xshift=-6.5em] (h){$h$};
 		\coordinate (labelbase) at (-5,0);
 
         \draw[->] (protoname) -- (inithash);
 		\draw[->] (inithash) -- ++(0,-2em) coordinate(im0) -| (ck);
 		\draw[->] (im0) -| (h);
 		
-		\node[right=7em of ck] (ei){$e_i$};
-		\node[right=8.5em of ck] (er){$e_r$};
-		\node[right=10em of ck] (si){$s_i$};
-		\node[right=11.5em of ck] (sr){$s_r$};
+		\node[right=7em of ck] (ei){$\mathbf{e_i}$};
+		\node[right=8.5em of ck] (er){$\mathbf{e_r}$};
+		\node[right=10em of ck] (si){$\mathbf{s_i}$};
+		\node[right=11.5em of ck] (sr){$\mathbf{s_r}$};
 
-
-		\node[draw,thick,below=1em of h] (mix0){MixHash};
-		\node[left=1em of mix0] (str0){\texttt{""}};
+		\node[draw,thick,below=3em of h] (mix0){MixHash};
+		\node[right=1em of mix0] (str0){\texttt{""}};
 		\node[left] at (str0 -| labelbase) (lbl0){\parbox{10em}{\raggedleft No preamble,\\use empty string}};
 
-		\draw[->] (h) -- (mix0);
+		\draw[h] (h) -- (mix0);
 		\draw[->] (str0) -- (mix0);
 		
+%---
 		\node[draw,thick,below=2em of mix0] (mix1){MixHash};
 		\node[left] at (mix1 -| labelbase) (tok0){$e\rightarrow $};
-		\draw[->] (mix0) -- (mix1);
-		\draw[->] (ei) |- (mix1);
+		\draw[h] (mix0) -- (mix1);
+		\draw[ki,ke] (ei) |- (mix1);
 
 		\node[draw,thick,below=2em of mix1] (mix2){MixHash};
-		\node[left=1em of mix2] (str2){\texttt{""}};
+		\node[right=1em of mix2] (str2){\texttt{""}};
 		\node[left] at (str2 -| labelbase) (lbl2){\parbox{10em}{\raggedleft EncryptAndHash\\No payload and\\$k$ unset}};
 		\draw[->] (str2) -- (mix2);
-		\draw[->] (mix1) -- (mix2);
+		\draw[h] (mix1) -- (mix2);
 
-		\node[draw,thick,below=2em of mix2] (mix3){MixHash};
+		\coordinate (a) at ($ (mix0) !0.5! (mix1) $);
+		\coordinate (b0) at (a -| lbl0.south west);
+		\draw[dashed] (b0) -- ($ (b0 -| sr) + (1em,0) $);
+%---
+		\node[draw,thick,below=4em of mix2] (mix3){MixHash};
 		\node[left] at (mix3 -| labelbase) (tok3){$e\leftarrow $};
-		\draw[->] (mix2) -- (mix3);
-		\draw[->] (er) |- (mix3);
+		\draw[h] (mix2) -- (mix3);
+		\draw[kr,ke] (er) |- (mix3);
 
 		\coordinate (sync4) at (mix3 -| ck);
 		\node[draw,thick,below=2em of sync4] (kmix1){MixKey};
 		\node[left] at (kmix1 -| labelbase) (tok4){$ee\leftarrow $};
 		\node[draw,thick,right=1em of kmix1] (dh0){ECDH};
-		\draw[->] (ck) -- (kmix1);
-		\draw[->] (ei) |- ($ (dh0.east) + (0,0.2em) $);
-		\draw[->] (er) |- ($ (dh0.east) - (0,0.2em) $);
+		\draw[ck] (ck) -- (kmix1);
+		\draw[ki,ke] (ei) |- ($ (dh0.east) + (0,0.2em) $);
+		\draw[kr,ke] (er) |- ($ (dh0.east) - (0,0.2em) $);
 		\draw[->] (dh0) -- (kmix1);
 
 		\coordinate (sync5) at (kmix1 -| h);
 		\node[draw,thick,below=2em of sync5] (mix5){MixHash};
 		\node[draw,thick,right=2em of mix5] (enc5){$E$};
 		\node[left] at (mix5 -| labelbase) (lbl5){$s\leftarrow $};
-		\draw[->] (mix3) -- (mix5);
+		\draw[h] (mix3) -- (mix5);
 		\draw[->] (enc5) -- (mix5);
-		\draw[->] (kmix1) -| (enc5);
-		\draw[->] (sr) |- (enc5);
+		\draw[->] ($ (kmix1.west) - (2em,0) $) -| (enc5);
+		\draw[kr,ks] (sr) |- (enc5);
 
 		\coordinate (sync6) at (mix5 -| ck);
 		\node[draw,thick,below=2em of sync6] (kmix6){MixKey};
 		\node[left] at (kmix6 -| labelbase) (tok6){$es\leftarrow $};
 		\node[draw,thick,right=1em of kmix6] (dh6){ECDH};
-		\draw[->] (kmix1) -- (kmix6);
-		\draw[->] (ei) |- ($ (dh6.east) + (0,0.2em) $);
-		\draw[->] (sr) |- ($ (dh6.east) - (0,0.2em) $);
+		\draw[ck] (kmix1) -- (kmix6);
+		\draw[ki,ke] (ei) |- ($ (dh6.east) + (0,0.2em) $);
+		\draw[kr,ks] (sr) |- ($ (dh6.east) - (0,0.2em) $);
 		\draw[->] (dh6) -- (kmix6);
 
 		\coordinate (sync7) at (kmix6 -| h);
@@ -348,27 +362,30 @@ A working prototype has been completed.
 		\node[draw,thick,right=2em of mix7] (enc7){$E$};
 		\node[right=1em of enc7] (str7){\texttt{""}};
 		\node[left] at (mix7 -| labelbase) (lbl7){\parbox{10em}{\raggedleft DecryptAndHash\\ No payload}};
-		\draw[->] (mix5) -- (mix7);
+		\draw[h] (mix5) -- (mix7);
 		\draw[->] (enc7) -- (mix7);
-		\draw[->] (kmix1.west) -- ++(-2em,0) -- ++(0,-5em) -| (enc7);
+		\draw[->] (kmix1.west) -- ++(-2em,0) |- ($ (enc5.south) !0.25! (enc7.north) $) -- (enc7);
 		\draw[->] (str7) -- (enc7);
 
+		\coordinate (a) at ($ (mix2) !0.5! (mix3) $);
+		\coordinate (b1) at (a -| lbl2.south west);
+		\draw[dashed] (b1) -- ($ (b1 -| sr) + (1em,0) $);
 % ---
-		\node[draw,thick,below=2em of mix7] (mix8){MixHash};
+		\node[draw,thick,below=4em of mix7] (mix8){MixHash};
 		\node[draw,thick,right=2em of mix8] (enc8){$E$};
 		\node[left] at (mix8 -| labelbase) (lbl8){$s\rightarrow $};
-		\draw[->] (mix7) -- (mix8);
+		\draw[h] (mix7) -- (mix8);
 		\draw[->] (enc8) -- (mix8);
-		\draw[->] (kmix6.west) -- ++(-2em,0) -- ++(0,-5em) -| (enc8);
-		\draw[->] (si) |- (enc8);
+		\draw[->] (kmix6.west) -- ++(-2em,0) |- ($ (enc7.south) !0.25! (enc8.north) $) -- (enc8);
+		\draw[ki,ks] (si) |- (enc8);
 
 		\coordinate (sync9) at (mix8 -| ck);
 		\node[draw,thick,below=2em of sync9] (kmix9){MixKey};
 		\node[left] at (kmix9 -| labelbase) (tok9){$se\rightarrow $};
 		\node[draw,thick,right=1em of kmix9] (dh9){ECDH};
-		\draw[->] (kmix6) -- (kmix9);
-		\draw[->] (si) |- ($ (dh9.east) - (0,0.2em) $);
-		\draw[->] (er) |- ($ (dh9.east) + (0,0.2em) $);
+		\draw[ck] (kmix6) -- (kmix9);
+		\draw[ki,ks] (si) |- ($ (dh9.east) - (0,0.2em) $);
+		\draw[kr,ke] (er) |- ($ (dh9.east) + (0,0.2em) $);
 		\draw[->] (dh9) -- (kmix9);
 
 		\coordinate (sync10) at (kmix9 -| h);
@@ -376,27 +393,40 @@ A working prototype has been completed.
 		\node[draw,thick,right=2em of mix10] (enc10){$E$};
 		\node[right=1em of enc10] (str10){\texttt{""}};
 		\node[left] at (mix10 -| labelbase) (lbl10){\parbox{10em}{\raggedleft EncryptAndHash\\ No payload}};
-		\draw[->] (mix8) -- (mix10);
+		\draw[h] (mix8) -- (mix10);
 		\draw[->] (enc10) -- (mix10);
 		\draw[->] (kmix9.west) -| (enc10);
 		\draw[->] (str10) -- (enc10);
 
+		\coordinate (a) at ($ (mix7) !0.5! (mix8) $);
+		\coordinate (b2) at (a -| lbl2.south west);
+		\draw[dashed] (b2) -- ($ (b2 -| sr) + (1em,0) $);
 % ---
 		\coordinate (sync11) at (mix10 -| ck);
 		\node[draw,thick,below=5em of sync11,xshift=-1em] (finkdf){HKDF};
-		\node[below=2em of finkdf,xshift=-1em] (k1){$k_1$};
-		\node[below=2em of finkdf,xshift= 1em] (k2){$k_2$};
+		\node[below=2em of finkdf,xshift=-1em] (k1){$\mathbf{k_1}$};
+		\node[below=2em of finkdf,xshift= 1em] (k2){$\mathbf{k_2}$};
 		\node[left=1em of finkdf,yshift=2em] (str11){\texttt{""}};
-		\draw[->] (kmix9) -- (finkdf.north -| kmix9);
-		\draw[->] (k1 |- finkdf.south) -- (k1);
-		\draw[->] (k2 |- finkdf.south) -- (k2);
+		\draw[ck] (kmix9) -- (finkdf.north -| kmix9);
+		\draw[ck] (k1 |- finkdf.south) -- (k1);
+		\draw[ck] (k2 |- finkdf.south) -- (k2);
 		\draw[->] (str11) -| ($ (finkdf.north) - (1em,0) $);
 
 		\coordinate (sync11a) at (finkdf.south -| h);
-		\node[below=2em of sync11a] (hout){$h$};
-		\draw[->] (mix10) -- (hout);
+		\node[below=2em of sync11a] (hout){$\mathbf{h}$};
+		\draw[h] (mix10) -- (hout);
 
 		\node[left] at (finkdf -| labelbase) (lbl13){\parbox{10em}{\raggedleft Split}};
+
+		\coordinate (a) at ($ (mix10) !0.5! (finkdf) $);
+		\coordinate (b3) at (a -| lbl10.south west);
+		\draw[dashed] (b3) -- ($ (b3 -| sr) + (1em,0) $);
+%---
+		\node[phaselbl, rectangle] at ($ (b0) !0.5! (b0 |- protoname) $) (setup){setup};
+		\node[phaselbl, circle] at ($ (b0) !0.5! (b1) $) (ph0){0};
+		\node[phaselbl, circle] at ($ (b1) !0.5! (b2) $) (ph1){1};
+		\node[phaselbl, circle] at ($ (b2) !0.5! (b3) $) (ph2){2};
+		\node[phaselbl, rectangle] at ($ (b3) !0.5! (b3 |- hout) $) (fin){fin};
 
     \end{tikzpicture}
     \caption{Cryptographic flowchart of Noise XX handshake}
