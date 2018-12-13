@@ -49,7 +49,7 @@
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
 \author{Sebastian Götte {\texttt<secureusb@jaseg.net>} @Mori lab, Waseda University}
-\title{Research directions in secure USB devices}
+\title{Securing the USB interface}
 \date{December 12 2018}
 \begin{document}
 \maketitle
@@ -97,14 +97,12 @@ Several ways to secure the USB interface have been proposed that can be broadly 
 
 We compare these approaches w.r.t. several attacks in \ref{approach_comparison}. Overall we found that QubesOS is the
 only advance towards securing this interface that is both \emph{practical} and \emph{effective}. Other approaches have
-not been successful so far. A likely reason for this is large market inertia and necessary backwards-compatibility.
-
+not been successful so far likely due to market inertia and backwards-incompatibility.
 QubesOS approaches the problem by running a separate VM with the USB host controllers mapped through via IOMMU. This VM
 runs a linux kernel with a small set of white-listed USB device drivers (HID and mass storage device) and a USB-over-IP
 backend. A set of Qubes services pass through any HID input arriving inside this VM into dom0, and coordinate exporting
 USB mass storage devices as Xen block devices. Any other USB devices can be passed-through to other VMs through
 USB-over-IP-over-QubesRPC, a Xen vChan-based inter-VM communication system.
-
 QubesOS is still lacking in that it's compartmentalization becomes essentially useless when it is used with a USB HID
 keyboard that does not have its own dedicated PCIe USB host controller, as any normal desktop and most recent laptop
 computers. The issue here is that USB HID is neither authenticated nor encrypted, and the untrusted USB VM sits in the
@@ -126,7 +124,6 @@ Despite the banality of everyday cybersecurity described above, there already ar
 advanced attacks including USB attacks. Due to their exceedingly simple execution, USB HID attacks are a very attractive
 way to perform targeted attacks. For this reason, specialized USB attack hardware is already available commercially at
 low cost. For users facing targeted attacks like this, SecureHID might already provide practical benefits.
-
 The users most at risk of targeted attacks are those either working with highly sensitive data or working with highly
 privileged access. The former group would include people such as journalists working with their sources and politicians
 working with confidential information. The latter group would include law enforcement officials, often being endowed
@@ -161,38 +158,48 @@ A schematic diagram of a system employing SecureHID is shown in figure \ref{diag
 seen here are that first, SecureHID requires no specialized hardware on either end and transparently plugs into the
 existing USB stack. Second, a SecureHID-protected setup has two well-defined security boundaries, one inside the
 SecureHID device between host and device side, and one in the host operating system between USB driver VM and
-hypervisor.
+hypervisor.  These security boundaries allow a clean separation of a SecureHID setup into untrusted and trusted domains
+and greatly simpliefies reasoning about overall system security.  Communication across these security boundaries is
+limited to the simple SecureHID protocol. We describe the design of the SecureHID protocol in section \ref{prot_desc}
+and elaborate its security properties in section \ref{prot_ver}. The security of the protocol's core components has been
+formally verified in the past and the protocol has been kept simple enough to allow exhaustive verification and testing.
 
-These security boundaries allow a clean separation of a SecureHID setup into untrusted and trusted domains and greatly
-simpliefies reasoning about overall system security.  Communication across these security boundaries is limited to the
-simple SecureHID protocol. We describe the design of the SecureHID protocol in section \ref{prot_desc} and elaborate
-its security properties in section \ref{prot_ver}. The security of the protocol's core components has been formally
-verified in the past and the protocol has been kept simple enough to allow exhaustive verification and testing.
-
-\begin{figure}[H]
+\begin{figure}[p]
     \includegraphics[scale=0.8]{system_diagram_with_secureusb.eps}
     \caption{Diagram of a SecureHID-protected system}
     \label{diagram_with}
 \end{figure}
 
-\subsection{Audio and other sensitive USB devices}
+\subsection{System security properties}
 This system is sufficient to secure any USB setup, especially unmodified desktop PCs or laptops where a USB host
 controller is shared between both HIDs and other devices. Attack surface is reduced such that a \emph{full compromise}
 of the system becomes unlikely, since plain HID is no longer supported. The remaining attack surface consists only of a
 \emph{compromise of the USB VM}. This attack surface is small enough that other sensitive devices such as USB audio
 devices can safely be connected. A compromise of the USB driver VM no longer gives full system access, but at best
-allows listening in on the microphone. Since a compromised USB VM does not have network access, such an attack will be
-mostly harmless in most scenarios. Additionally, the most likely attacking devices would be custom hardware or a
-smartphone. Custom hardware can easily be outfitted with a microphone, essentially turning it into a bug irrespective of
-USB functionality, and smartphones already have microphones by definition.
+allows listening in on the microphone. Since a compromised USB VM in general does not have network access, such an
+attack will be mostly harmless in most scenarios. Additionally, the most likely attacking devices would be custom
+hardware or a compromised smartphone. Custom hardware can easily be outfitted with a microphone, essentially turning it
+into a bug irrespective of USB functionality, and smartphones already have microphones by definition.
 
-A practical mitigation to this issue would be to simply connect microphones either to a PCIe-based sound card as in most
-laptops, or to simply unplug the microphone when not used.
+A practical mitigation for potential information leakage through microphones, webcams and other sensitive devices would
+be to simply unplug them when not used. Microphones could also be connected to a PCIe-based sound card (such as the
+integrated sound card of most laptops) and webcams could potentially be isolated to a separate USB host controller.
 
 \subsection{USB physical-level and bus-level attacks}
 Since sensitive HIDs are isolated from other USB devices effectively on a separate bus, bus-level attacks such as
-\textcite{neugschwandtner01} are entirely prevented. Even much scarier physical attacks on USB such as \textcite{su01}
-are prevented given an adequate hardware implementation, which fortunately is no too complicated.
+\textcite{neugschwandtner01} are entirely prevented. The much scarier physical attacks on USB such as \textcite{su01}
+can be prevented thanks to the clear security boundary inside the SecureHID device. Since there is only four wires
+needed between the trusted and untrusted sides (Ground, VCC, serial RX and serial TX) and the serial link is running at
+a comparatively low speed (115.2kBd easily suffice), analog filtering is a viable measure against sidechannels. On the
+ground and VCC rails extensive filtering using series inductors and large capacitors can be used to decouple both sides.
+Additionally, both sides' microcontrollers can optionally be fed from separate voltage regulators powered off the USB 5V
+rail to reduce side-channels. The serial link can be filtered to limit its analog bandwidth to above serial speeds
+(50kHz) but much below the trusted microcontroller's system clock (72MHz). Finally, on the untrusted microcontroller
+choosing UART pins that are not multiplexed to its internal ADC elminates the risk of direct measurements by a
+compromised microcontroller firmware and leaves only indirect measurements of power supplies or coupling into other
+pins' signals. This means that with a few very inexpensive hardware countermeasures (an additional voltage regulator and
+a handful of capacitors, inductors and resistors for filtering) any analog side-channels between trusted and untrusted
+side can be ruled out.
 
 \section{Cryptographic design}
 
@@ -213,7 +220,7 @@ ChaCha20-Poly1305 as AEAD for the data phase. ECDH instead of traditional DH was
 computation. Since no variant of RSA is used, key generation is fast. An ad-hoc prototype device-side random number
 generator has been implemented based on BLAKE2s and the STM32's internal hardware RNG.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \begin{sequencediagram}
         \newinst{kbd}{Keyboard}
@@ -323,7 +330,6 @@ Roughly speaking, this protocol is secure given that the only way to MITM a (EC)
 key exchanges with both parties, then relay messages. Since both parties have different static keys, the resulting two
 (EC)DH sessions will have different handshake hashes under the noise framework. The channel binding step reliably
 detects this condition through an out-of-band transmission of the \textsc{host} handshake hash to \textsc{device}.
-
 The only specialty here is that this OOB transmission is relayed back from \textsc{device} to \textsc{host} allowing the
 MITM to intercept it. This is only done for user convenience absent a MITM and the result is discarded by \textsc{host}.
 Since the handshake hash does as a hash does not leak any sensitive information about the keys used during the
@@ -335,14 +341,13 @@ handshake, it being exposed does not impact protocol security.
 \label{sec_prop}
 According to \textcite{perrin01} and proven by \textcite{kobeissi01} Noise's XX pattern provides strong forward-secrecy,
 sender and receiver authentication and key compromise impersonation resistance. Strong forward secrecy means an attacker
-can only decrypt messages by compromising the receivers private key and performing an active impersonation.
-
-Strong forward secrecy rules out both physical and protocol-level eavesdropping attacks by malicious USB devices and
-implies that an attacker can never decrypt past protocol sessions. An implication of the static key checks done on both
-sides of the connection is that an attacker would need to compromise both host and device in order to remain undetected
-for e.g. keylogging.  Compromising only one party the worst that can be done is impersonating the SecureHID device to
-perform a classical HID attack. In this case, the attacker cannot read user input.  The user would notice this by
-SecureHID indicating a not connected status and no input being accepted.
+can only decrypt messages by compromising the receivers private key and performing an active impersonation.  Strong
+forward secrecy rules out both physical and protocol-level eavesdropping attacks by malicious USB devices and implies
+that an attacker can never decrypt past protocol sessions. An implication of the static key checks done on both sides of
+the connection is that an attacker would need to compromise both host and device in order to remain undetected for e.g.
+keylogging.  Compromising only one party the worst that can be done is impersonating the SecureHID device to perform a
+classical HID attack. In this case, the attacker cannot read user input and the user would notice this by SecureHID
+indicating a not connected status and thus the keyboard not working.
 % FIXME possibly detect this by having session counter etc.?
 
 To verify that these security properties extend to the overall SecureHID protocol it suffices to show the following
@@ -362,75 +367,16 @@ Since all sensitive data in our application is handled on the device in a single
 routine), \ref{adh2} is easily validated by code review. USB HID reports are only transmitted either encrypted after the
 handshake has been completed or in plain during pairing. Since the host will only inject reports into the input
 subsystem that have been properly authenticated and encrypted (and not the unauthenticated reports sent during pairing),
-the protocol is secure in this regard.
-% FIXME only start pairing after button press
+the protocol is secure in this regard. Since pairing keyboard input is only passed through after the host's pairing
+request has been acknowledged by the user with SecureUSB's physical pairing button the user would certainly notice an
+attack trying to exfiltrate data this way. Were pairing input passed through automatically without explicit user
+acknowledgement, an attacker could start pairing mode just as the user starts typing in a password prompt such as the
+one of \texttt{sudo} or a password field and might not notice the attack until they have typed out their entire password
+to the attacker.
 
 \subsubsection{Handshake hash non-secrecy}
 
-To analyze the impact of disclosing the handshake hash to an adversary we must consider it's definition. The noise
-protocol specification gives its definition, but does not % FIXME double-check this 
-guarantee that it can be disclosed to an adversary without compromising security. Figure \ref{crypto_diagram} contains a
-flowchart of the derivation of both initiator-transmit and initiator-receive symmetric encryption keys $k_{1,2}$ and the
-handshake hash $h$ during the Noise handshake. The definitions of MixHash and MixKey according to the Noise protocol
-specification are as follows.
-
-\begin{align}
-	\text{MixHash}(h,\text{input}) &= h' = H(h || \text{input})\\
-	\text{MixKey}(ck, \text{input}) &= (ck', k_\text{temp}) = \text{HKDF}(ck, \text{input}, 2)\\
-\end{align}
-
-Noise's hash-based key derivation function (HKDF) is defined using the HMAC defined in RFC2104\cite{rfc2104}. The hash
-function $H$ employed here depends on the cipher spec used, in this work it is BLAKE2s.
-\begin{equation}
-	\text{HMAC}(K, \text{input}) = H\left(\left(K \oplus opad\right)
-		|| H\left(\left(K \oplus ipad\right) || \text{input} \right)\right)
-\end{equation}
-
-The HKDF is defined for two and three outputs as follows.
-\begin{equation}
-	\text{HKDF}(ck, \text{input}, n_\text{out}) =
-		\left\{\begin{array}{ll}
-			(q_0, q_1) &: n_\text{out} = 2\\
-			(q_0, q_1, q_2) &: n_\text{out} = 3\\
-		\end{array}\right.
-\end{equation}
-
-The outputs $q_i$ are derived from chained HMAC invocations. First, a temporary key $t'$ is derived from the chaining key $ck$
-and the input data using the $HMAC$, then depending on $n_\text{out}$ the HMAC is chained twice or thrice to produce
-$q_{\{0,1,2\}}$.
-\begin{gather}
-	t' = \text{HMAC}(ck, \text{input})\\
-	\underbrace{\text{HMAC} \Bigl(t',
-	\underbrace{\text{HMAC} \bigl(t',
-	\underbrace{\text{HMAC} (t',
-		   1_{16})}_{q_0}
-		|| 2_{16}\bigr)}_{q_1}
-		|| 3_{16}\Bigr)}_{q_2}
-\end{gather}
-
-Figure \ref{crypto_diagram} shows the two properties relevant to this protocol implementation's security:
-\begin{enumerate}
-\item Initiator and responder ephemeral and static keys are all mixed into the handshake hash at least once.\label{fp1}
-\item Knowledge of the handshake hash does not yield any information on the symmetric AEAD keys $k_1$ and $k_2$.\label{fp2}
-\end{enumerate}
-
-\ref{fp1} is evident since $e_i$ and $e_r$ are mixed in directly and $s_i$ and $s_r$ are mixed in after encryption with
-temporary encryption keys derived from $ck$ at the $s\rightarrow$ and $s\leftarrow$ steps
-during the handshake.
-
-We can see \ref{fp2} applies by following the derivation of $h$ backwards. If an attacker learned anything about $k1$ or
-$k2$ during an attack by (also) observing $h$ that they did not learn before, we could construct an oracle allowing both
-reversal of $H$ in the final invocation of $MixHash$ and breaking $E$ using this attacker. The attacker would have to
-reverse $H$ at some point since $h = H(\hdots)$ in the final invocation of MixHash. The attacker would have to recover
-the key of $E$ in at least one invocation since $s_i$ and $s_r$ are only mixed into $h$ after either being encrypted
-using $E$ or being used after ECDH to generate a key for $E$. Since the result of ECDH on $e_i$ and $e_r$ is mixed into
-$h$ in the $ee\leftarrow$ and following DecryptAndHash steps, $h$ is blinded to an attacker so that they cannot even
-determine a given $k_1$ and $k_2$ match a given $h$ without compromising ECDH security.
-
-This means that given the underlying primitives are secure, we do not leak any information on $k1$ or $k2$ by disclosing
-$h$.
-
-\begin{figure}[h!]
+\begin{figure}[p]
 	\centering
 	\tikzset{%
 		h/.style = {->, very thick},
@@ -589,11 +535,144 @@ $h$.
     \label{crypto_diagram}
 \end{figure}
 
+To analyze the impact of disclosing the handshake hash to an adversary we must consider it's definition. The noise
+protocol specification gives its definition, but does not % FIXME double-check this 
+guarantee that it can be disclosed to an adversary without compromising security. Figure \ref{crypto_diagram} contains a
+flowchart of the derivation of both initiator-transmit and initiator-receive symmetric encryption keys $k_{1,2}$ and the
+handshake hash $h$ during the Noise handshake. The definitions of MixHash and MixKey according to the Noise protocol
+specification are as follows.
+
+\begin{align}
+	\text{MixHash}(h,\text{input}) &= h' = H(h || \text{input})\\
+	\text{MixKey}(ck, \text{input}) &= (ck', k_\text{temp}) = \text{HKDF}(ck, \text{input}, 2)\\
+\end{align}
+
+Noise's hash-based key derivation function (HKDF) is defined using the HMAC defined in RFC2104\cite{rfc2104}. The hash
+function $H$ employed here depends on the cipher spec used, in this work it is BLAKE2s.
+\begin{equation}
+	\text{HMAC}(K, \text{input}) = H\left(\left(K \oplus opad\right)
+		|| H\left(\left(K \oplus ipad\right) || \text{input} \right)\right)
+\end{equation}
+
+The HKDF is defined for two and three outputs as follows.
+\begin{equation}
+	\text{HKDF}(ck, \text{input}, n_\text{out}) =
+		\left\{\begin{array}{ll}
+			(q_0, q_1) &: n_\text{out} = 2\\
+			(q_0, q_1, q_2) &: n_\text{out} = 3\\
+		\end{array}\right.
+\end{equation}
+
+The outputs $q_i$ are derived from chained HMAC invocations. First, a temporary key $t'$ is derived from the chaining key $ck$
+and the input data using the $HMAC$, then depending on $n_\text{out}$ the HMAC is chained twice or thrice to produce
+$q_{\{0,1,2\}}$.
+\begin{gather}
+	t' = \text{HMAC}(ck, \text{input})\\
+	\underbrace{\text{HMAC} \Bigl(t',
+	\underbrace{\text{HMAC} \bigl(t',
+	\underbrace{\text{HMAC} (t',
+		   1_{16})}_{q_0}
+		|| 2_{16}\bigr)}_{q_1}
+		|| 3_{16}\Bigr)}_{q_2}
+\end{gather}
+
+Relevant to this protocol implementation's security are the following two properties, both of which can be derived from
+figure \ref{crypto_diagram}:
+\begin{enumerate}
+\item Initiator and responder ephemeral and static keys are all mixed into the handshake hash at least once.\label{fp1}
+\item Knowledge of the handshake hash does not yield any information on the symmetric AEAD keys $k_1$ and $k_2$.\label{fp2}
+\end{enumerate}
+
+\ref{fp1} is evident since $e_i$ and $e_r$ are mixed in directly and $s_i$ and $s_r$ are mixed in after encryption with
+temporary encryption keys derived from $ck$ at the $s\rightarrow$ and $s\leftarrow$ steps during the handshake.
+We can see \ref{fp2} applies by following the derivation of $h$ backwards. If an attacker learned anything about $k1$ or
+$k2$ during an attack by (also) observing $h$ that they did not learn before, we could construct an oracle allowing both
+reversal of $H$ in the final invocation of $MixHash$ and breaking $E$ using this attacker. The attacker would have to
+reverse $H$ at some point since $h = H(\hdots)$ in the final invocation of MixHash. The attacker would have to recover
+the key of $E$ in at least one invocation since $s_i$ and $s_r$ are only mixed into $h$ after either being encrypted
+using $E$ or being used after ECDH to generate a key for $E$. Since the result of ECDH on $e_i$ and $e_r$ is mixed into
+$h$ in the $ee\leftarrow$ and following DecryptAndHash steps, $h$ is blinded to an attacker so that they cannot even
+determine a given $k_1$ and $k_2$ match a given $h$ without compromising ECDH security.
+This means that given the underlying primitives are secure, we do not leak any information on $k1$ or $k2$ by disclosing
+$h$.
+
+% FIXME find and consistently apply a nice name for this handshake method
+\subsection{Alternative uses for interactive public channel binding}
+
+The channel binding method described above can be used in any scenario where a secure channel between two systems must
+be established where one party has a display of some sort and the other party has an input device of some sort. 
+
+\paragraph{Adaption to mice} Instead of a keyboard, a mouse can be used for pairing without compromising protocol
+security. The host would encode the fingerprint bit string into a permutation
+$\sigma(i) : \{n\in\mathbb N, n\le m\} \rightarrow \{n\in\mathbb N, n\le m\}$ 
+and then display the sequence $\sigma(i)$ in a grid of buttons similar to a minesweeper field with an emualted mouse
+cursor driven by pairing input on top. The user would then click the buttons on the grid in numeric order. The device
+would do the same mouse emulation invisible to the user and would be able to observe the permutation this way. The
+fingerprint can finally be checked by decoding the permutation into a bit string and comparing. The security level for
+this method in bits is $\eta = \log_2(m!)$ or better than 80bit for $m=25$ in case of a 5x5 grid.  See figure
+\ref{mouse_mockup} for a mockup of what such a system might look like. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=7cm]{mouse_mockup.png}
+    \caption{A mockup of what mouse-based interactive pairing might look like}
+    \label{mouse_mockup}
+\end{figure}
+
+\paragraph{Adaption to button input}
+Adaption to button input using few buttons is a little bit harder. The obvious but impractical solution here is to have
+the user enter a very long numeric string. Entering an 80-bit number on a two-button binary keyboard is not
+user-friendly. One other option would be to emulate an on-screen keyboard similar to the ones used in arcade and console
+video games for joystick input. This would be more user-friendly and would likely be a natural interface to many users
+familiar with such games. One possible attack here is that if the host were to ignore dropped input packets, an attacker
+might selectively drop packets in order to cause a desynchronization of host and device fingerprint input states. The
+user would likely chalk up this behavior to sticky or otherwise unreliable keys and while they might find it
+inconvenient, they might not actually abort the procedure. Thus it is imperative that the host verify there are no
+dropped packets during pairing. This same observation is also true for keyboard or mouse-based pairing as explained
+above, but an attack would be much more noticeable there to users as mice and keyboards are generally regarded reliable
+by most users.
+
+\paragraph{Relation to screen-to-photodiode interfaces}
+% FIXME citations
+There have been many systems using a flashing graphic on a screen to transmit data to a receiver containing a photodiode
+held against the screen. Such systems have been used to distribute software over broadcast television but have also been
+used for cryptographic purposes. One widely-deployed example is the ``Flickertan'' system used for wire transfer
+authorization in Germany where a smartcard reader with five photodiodes is held against a flickering image on the bank
+website's wire transfer form\cite{schiermeier01,schiermeier02,braun01}. Systems such as this one do not benefit from the
+interactive channel binding process described in this paper since they do not require any direct user interaction. They
+could however be used as an alternative means for channel binding in any system also supporting interactive pairing as
+described above. The handshake fingerprint would simply be encoded into the flicker signal and transmitted to the other
+endpoint in that way.  Similarly, QR-codes or other barcodes could be used to a device containing a camera. The primary
+advantage of photodiode-based systems is that they incur lower implementation complexity and don't require a potentially
+expensive camera.
+
 \section{Hardware implementation}
-% FIXME
+\subsection{Hardware overview}
+To demonstrate the practicality of this approach and to evaluate its usability in an everyday scenario, a hardware
+prototype has been built. Based on an initial prototype consisting of a microcontroller development board and a bundle
+of wires a custom PCB fitting an off-the-shelf case has been produced that allows future % FIXME
+usability testing in practical settings.
+
+The hardware implementation consists of two ARM microcontrollers, one for the untrusted host side and one for the
+trusted device side. Both are linked using a simple UART interface. Both microcontrollers have been chosen by their USB
+functionality. For the integrated USB host controller, we had to chose a rather powerful microcontroller on the trusted
+device side even though a much less powerful one would have sufficed even though we are doing serious cryptography on
+this microcontroller. AES encryption is done on every data packet and must compelete in time for the overall system to
+meet its latency requirement, % FIXME go into details on input latency vs. usability somewhere else
+but is fast enough by a large margin. % FIXME benchmarks
+Similarly, the hash and ECDH operations during the cryptographic handshake are fast enough by a large margin. %FIXME benchmark
+Additionally, those operations are only invoked infrequently any time the device is disconnected or the host suspends.
+
+\subsection{Hardware security measures}
+% separate power supplies, possible future filtering of power/gnd and comms link signals
+
+\subsection{Usability considerations}
+% buzzer, leds etc.
 
 \section{Evaluation}
 % FIXME
+
+\section{Future work}
 
 \section{Conclusion}
 % FIXME
@@ -672,14 +751,14 @@ A working prototype has been completed.
 
 \section{Possible directions}
 \begin{itemize}
-    \item Elaborate handshake security properties
-        \begin{itemize}
-            \item Possibly investigate other applications of this type of interactive handshake
+%    \item Elaborate handshake security properties
+%        \begin{itemize}
+%            \item Possibly investigate other applications of this type of interactive handshake
             \item Possibly contrast to carmera/other backchannel systems
 %            \item IMHO the pairing scheme is the most interesting part of this project from a scientific point of view
 % 			\item Prove security
-        \end{itemize}
-    \item Elaborate overall security properties of QubesOS-based system
+%        \end{itemize}
+%    \item Elaborate overall security properties of QubesOS-based system
     \item Elaborate possible DisplayPort/HDMI-based display encryption $\rightarrow$ Bunnie's NeTV2 w/ HDMI/eDP converter
     \item Elaborate possible encrypted remote input (SSH) setups
         \begin{itemize}
