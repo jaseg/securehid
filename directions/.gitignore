@@ -1,0 +1,10 @@
+*.aux
+*.log
+*.bcf
+*.blg
+*.bbl
+*.out
+*.bib.*
+*.bib~*
+*.run.xml
+*-eps-converted-to.pdf
