@@ -598,6 +598,7 @@ $h$.
 
 % FIXME find and consistently apply a nice name for this handshake method
 \subsection{Alternative uses for interactive public channel binding}
+\label{altuse}
 
 The channel binding method described above can be used in any scenario where a secure channel between two systems must
 be established where one party has a display of some sort and the other party has an input device of some sort. 
@@ -668,7 +669,6 @@ above, then copying the key through it. Compared to current common practice this
 transfer a key by simply reading out aloud the channel binding fingerprint. This reduces the problem of a digital
 out-of-band channel trusted for direct transfer of manipulation-sensitive key material to the problem of two users being
 sure whether they're actually talking to each other instead of an impostor.
-% FIXME
 
 \section{Hardware implementation}
 \subsection{Hardware overview}
@@ -691,13 +691,41 @@ Additionally, those operations are only invoked infrequently any time the device
 % separate power supplies, possible future filtering of power/gnd and comms link signals
 
 \subsection{Usability considerations}
-% buzzer, leds etc.
-\paragraph{Security-relevant UI components}
+In many systems such as common TLS-based systems, overall system security heavily depends on implementation details such
+as certificate checking and user interface details such as the precise structure of security warning messages and how
+they can be overridden. The complexity of these components in practice often leads to insecure systems, such as a system
+using TLS checking a certificate's internal validity but omitting checks on the certificate's chain of trust. A nice
+property of the key estabilishment sytsem outlined in this paper is that it is both very simple, reducing surface for
+errors and it tightly couples the critical channel binding step during key establishment to the overall system's user
+interface. In a system using either keyboard or mouse-based interactive channel binding, an implementation that does not
+perform the channel binding step correctly would simply not work. If the host does not display the correct fingerprint
+the user cannot enter it and the device will not complete the binding step. If the device does not relay fingerprint
+data correctly during pairing the host application would clearly indicate to the user things are amiss with the input
+not matching the fingerprint.  Since the channel fingerprint is computed in a cryptographically well-defined way based
+on entropy contributed by both partners during pairing a implementer would not even be able to accidentially degrade
+fingerprint security.
+
+The critical point from an UI perspective in this pairing scheme is that the host application must display correct
+instructions to the user for them to complete pairing. In particular the host application must put emphasis on the user
+actually checking whether the device raised an alarm before confirming pairing after fingerprint input. Even if it
+didn't the user would notice the device not functioning, but an attacker might have gained unauthorized access in the
+meantime. Likewise, the device needs a clearly understandable method of indicating pairing failure to the user. In
+practice a loud buzzer and a few bright LEDs would likely suffice for this.
 
 \section{Evaluation}
 % FIXME
 
 \section{Future work}
+
+The aspects outlined in section \ref{altuse} provide potential future research directions. The adaption of the system to
+mouse input might be an interesting target for a user experience study, particularly in comparison with a purely
+keyboard-based system. The SSH key exchange method would be an interesting target for a general-use systems
+administration tool. Though we have done some basic security arguments in this paper, a more rigurous formalization
+might be interresting for future use of this technology. We have soundly argued about the user experience benefits of
+our method, but we have not performed any field experiments to back up these arguments. Future research might analyze
+the practical security a system as outlined in this paper yields under real-world conditions. The various trade-offs of
+e.g. keyboard vs. mouse input, fingerprint lenght and design details of the pairing UI might be analyzed with respect to
+practical usability and security.
 
 \section{Conclusion}
 % FIXME
