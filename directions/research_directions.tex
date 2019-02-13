@@ -634,7 +634,6 @@ above, but an attack would be much more noticeable there to users as mice and ke
 by most users.
 
 \paragraph{Relation to screen-to-photodiode interfaces}
-% FIXME citations
 There have been many systems using a flashing graphic on a screen to transmit data to a receiver containing a photodiode
 held against the screen. Such systems have been used to distribute software over broadcast television but have also been
 used for cryptographic purposes. One widely-deployed example is the ``Flickertan'' system used for wire transfer
@@ -646,6 +645,30 @@ described above. The handshake fingerprint would simply be encoded into the flic
 endpoint in that way.  Similarly, QR-codes or other barcodes could be used to a device containing a camera. The primary
 advantage of photodiode-based systems is that they incur lower implementation complexity and don't require a potentially
 expensive camera.
+
+\paragraph{Adaption for SSH identity distribution}
+Our interactive channel binding method using a passphrase could be used for key establishment in an SSH setup.
+SSH includes a powerful built-in public-key authentication system, but does not include key management functionality.
+To grant and revoke public key-based access to a host or account, SSH expects the user to manually manage a textual
+\texttt{authorized\_keys} file containing all public keys allowed to login to a particular host or account. Mutual
+authentification is supported by default, using a trust on first use system storing host key fingerprints in a
+\texttt{known\_hosts} file. SSH's identity management system is well-tested and can be considered secure for almost any
+purpose. It is however very simplistic and shifts the burden of access management and identity synchronization to the
+user. Except in very simple use cases, the user will have to provide their own identity management layer on top of the
+primitives provided by SSH. Common implementations of this include offloading \texttt{authorized\_keys} functionality to
+LDAP or automatically generating \texttt{authorized\_keys} files from a configuration management system. The secure
+implementation of any such system incurs a large organizational overhead. SSH keys are too long to be practically
+read-out aloud which in case of small organizations often leads ot insecure practices such as sharing of SSH public keys
+through chat, email or wiki pages for initial access during say, onboarding of a new employee. Though such out-of-band
+key distribution schemes may well be secure often the OOB channel's security is not adequately considered in advance.
+
+The interactive channel binding method described in this paper could be used to interactively transfer an SSH key's
+public to another host by simply establishing a secure channel from source to target machine in the fashion outlined
+above, then copying the key through it. Compared to current common practice this approach would allow two users to
+transfer a key by simply reading out aloud the channel binding fingerprint. This reduces the problem of a digital
+out-of-band channel trusted for direct transfer of manipulation-sensitive key material to the problem of two users being
+sure whether they're actually talking to each other instead of an impostor.
+% FIXME
 
 \section{Hardware implementation}
 \subsection{Hardware overview}
@@ -669,6 +692,7 @@ Additionally, those operations are only invoked infrequently any time the device
 
 \subsection{Usability considerations}
 % buzzer, leds etc.
+\paragraph{Security-relevant UI components}
 
 \section{Evaluation}
 % FIXME
